@@ -42,6 +42,8 @@ module ResourceTrees
   # the entire tree is the indexer, and it doesn't need instance/container
   # information from the tree anyway.
 
+  # extended the properties to include resource and component IDs
+
   def load_node_properties(node, properties, ids_of_interest = :all)
     super
 
