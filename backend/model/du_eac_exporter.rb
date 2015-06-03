@@ -53,25 +53,25 @@ class EACSerializer < ASpaceExport::Serializer
           }
         end
           
-        # xml.maintenanceEvent {
-        #   xml.eventType "created"
-        #   ctime = Time.mktime(json.create_time.to_s).utc.strftime '%Y-%m-%dT%H:%M:%S'
-        #   xml.eventDateTime(:standardDateTime => ctime) {
-        #     xml.text ctime
-        #   } 
-        #   xml.agentType "human"
-        #   xml.agent "unknown"
-        # }
-        
-        # xml.maintenanceEvent {
-        #   xml.eventType "revised"
-        #   ctime = Time.mktime(json.system_mtime.to_s).utc.strftime '%Y-%m-%dT%H:%M:%S'
-        #   xml.eventDateTime(:standardDateTime => ctime) {
-        #     xml.text ctime
-        #   } 
-        #   xml.agentType "human"
-        #   xml.agent "unknown"
-        # }
+        xml.maintenanceEvent {
+          xml.eventType "created"
+          ctime = Time.mktime(json.create_time.to_s).utc.strftime '%Y-%m-%dT%H:%M:%S'
+          xml.eventDateTime(:standardDateTime => ctime) {
+            xml.text ctime
+          } 
+          xml.agentType "human"
+          xml.agent "unknown"
+        }
+       
+        xml.maintenanceEvent {
+          xml.eventType "revised"
+          ctime = Time.mktime(json.system_mtime.to_s).utc.strftime '%Y-%m-%dT%H:%M:%S'
+          xml.eventDateTime(:standardDateTime => ctime) {
+            xml.text ctime
+          } 
+          xml.agentType "human"
+          xml.agent "unknown"
+        }
       }
     
     } 
@@ -252,9 +252,6 @@ class EACSerializer < ASpaceExport::Serializer
   def _build_name_entries(json, xml)
     json.names.each do |name|
       xml.nameEntry {
-        xml.authorizedForm name['rules'] if name['rules']
-        xml.authorizedForm name['source'] if name['source']
-
         json.name_part_fields.each do |field, localType|
           localType = localType.nil? ? field : localType
           next unless name[field]
@@ -268,6 +265,8 @@ class EACSerializer < ASpaceExport::Serializer
             _build_date_ranges(date, xml)
           }
         end
+
+		xml.authorizedForm name['source'] if name['source']
       }
     end
   end
