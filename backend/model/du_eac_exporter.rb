@@ -31,10 +31,10 @@ class EACSerializer < ASpaceExport::Serializer
       xml.maintenanceStatus json.create_time == json.system_mtime ? "new" : "revised"
     
       xml.maintenanceAgency {
-        xml.agencyName json.maintenanceAgency.agencyName
         if json.maintenanceAgency.agencyCode
-          xml.agencyCode json.maintenanceAgency.agencyCode
-        end
+		  xml.agencyCode json.maintenanceAgency.agencyCode
+		end
+		xml.agencyName json.maintenanceAgency.agencyName
       }
     
       xml.maintenanceHistory {
