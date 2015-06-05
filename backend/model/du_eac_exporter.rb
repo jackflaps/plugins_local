@@ -31,10 +31,10 @@ class EACSerializer < ASpaceExport::Serializer
       xml.maintenanceStatus json.create_time == json.system_mtime ? "new" : "revised"
     
       xml.maintenanceAgency {
+        xml.agencyName json.maintenanceAgency.agencyName
         if json.maintenanceAgency.agencyCode
-		  xml.agencyCode json.maintenanceAgency.agencyCode
-		end
-		xml.agencyName json.maintenanceAgency.agencyName
+          xml.agencyCode json.maintenanceAgency.agencyCode
+        end
       }
     
       xml.maintenanceHistory {
@@ -62,7 +62,7 @@ class EACSerializer < ASpaceExport::Serializer
           xml.agentType "human"
           xml.agent "unknown"
         }
-       
+        
         xml.maintenanceEvent {
           xml.eventType "revised"
           ctime = Time.mktime(json.system_mtime.to_s).utc.strftime '%Y-%m-%dT%H:%M:%S'
@@ -116,7 +116,7 @@ class EACSerializer < ASpaceExport::Serializer
                   xml.text sn['content'].join('--')
                 }
               when 'note_citation'
-                atts = Hash[ sn['xlink'].map {|x, v| ["xlink:#{x}", v] }.reject{|a| a[1].nil?} ] 
+				atts = Hash[ sn['xlink'].map {|x, v| ["xlink:#{x}", v] }.reject{|a| a[1].nil?} ] unless sn['xlink'].nil? 
                 xml.citation(atts) {
                   xml.text sn['content'].join('--')
                 }
@@ -181,8 +181,7 @@ class EACSerializer < ASpaceExport::Serializer
           }
         end
 
-		# commenting related records out for now, the DU authority record has 47,000 of them and it destroys the export
-		# 
+
         #json.related_records.each do |record|
         #  role = record[:role] + "Of"
         #  record = record[:record]
