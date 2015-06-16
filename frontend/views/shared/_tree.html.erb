@@ -212,7 +212,6 @@
 
   <div id="tree_toolbar_template"><!--
     <div class="btn-toolbar">
-      <div class="btn-group"></div>
     </div>
   --></div>
 
@@ -223,12 +222,12 @@
       {if defined('previous')}
         <a href="#tree::${previous}" class="btn btn-xs btn-default btn-prev-tree-node"><span class="glyphicon glyphicon-arrow-left"></span></a>
       {else}
-        <a disabled="disabled" class="btn btn-xs btn-default btn-prev-tree-node"><span class="glyphicon glyphicon-arrow-left"></span></a>
+        <a class="btn btn-xs btn-default btn-prev-tree-node disabled"><span class="glyphicon glyphicon-arrow-left"></span></a>
       {/if}
       {if defined('next')}
         <a href="#tree::${next}" class="btn btn-xs btn-default btn-next-tree-node"><span class="glyphicon glyphicon-arrow-right"></span></a>
       {else}
-        <a disabled="disabled" class="btn btn-xs btn-default btn-next-tree-node"><span class="glyphicon glyphicon-arrow-right"></span></a>
+        <a class="btn btn-xs btn-default btn-next-tree-node disabled"><span class="glyphicon glyphicon-arrow-right"></span></a>
       {/if}
     </div>
   --></div>
@@ -236,7 +235,6 @@
   <% if not read_only %>
 
     <div id="tree_nodeactions_toolbar_template"><!--
-      <div class="btn-group">
         <div class="btn-group">
           {if rules.hasOwnProperty("can_add_child")}
             <a class="btn btn-xs btn-default add-child" rel="${rules.can_add_child.type}" href="javascript:void(0);" data-record-label="${rules.can_add_child.record_label}" title="${rules.can_add_child.action_label}">
@@ -266,17 +264,17 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu">
-            {if !parent.hasClass("root")}
-              <li><a href="javascript:void(0);" class="move-node move-node-up-level" data-target-node-id="${parent.parents("li:first").attr("id")}" data-target-index="${parent.index()}"><span class="glyphicon glyphicon-arrow-left"></span> <%= I18n.t "actions.move_up_a_level" %></a></li>
+            {if up_level}
+              <li><a href="javascript:void(0);" class="move-node move-node-up-level" rel="up-level"><span class="glyphicon glyphicon-arrow-left"></span> <%= I18n.t "actions.move_up_a_level" %></a></li>
             {/if}
 
-            {var children_count = parent.find("> ul > li").length}
+            {var children_count = parent.children.length}
             {if children_count > 1}
-              {if node.index() > 0}
-                <li><a href="javascript:void(0);" class="move-node move-node-up" data-target-node-id="${parent.attr("id")}" data-target-index="${node.index()-1}"><span class="glyphicon glyphicon-arrow-up"></span> <%= I18n.t "actions.move_up" %></a></li>
+              {if !is_first}
+                <li><a href="javascript:void(0);" class="move-node move-node-up" rel="up"><span class="glyphicon glyphicon-arrow-up"></span> <%= I18n.t "actions.move_up" %></a></li>
               {/if}
-              {if node.index() < children_count - 1}
-                <li><a href="javascript:void(0);" class="move-node move-node-down" data-target-node-id="${parent.attr("id")}" data-target-index="${node.index()+1}"><span class="glyphicon glyphicon-arrow-down"></span> <%= I18n.t "actions.move_down" %></a></li>
+              {if !is_last}
+                <li><a href="javascript:void(0);" class="move-node move-node-down" rel="down"><span class="glyphicon glyphicon-arrow-down"></span> <%= I18n.t "actions.move_down" %></a></li>
               {/if}
             {/if}
 
@@ -285,7 +283,7 @@
                 <a href="javascript:void(0);"><span class="glyphicon glyphicon-arrow-right"></span> <%= I18n.t "actions.move_down_into" %></a>
                 <ul class="dropdown-menu">
                 {for sibling in siblings}
-                  <li><a href="javascript:void(0);" class="move-node move-node-down-into" data-target-node-id="${sibling.id}">${sibling.title}</a></li>
+                  <li><a href="javascript:void(0);" class="move-node move-node-down-into" rel="down-into" data-target-node-id="${sibling.id}">${sibling.title}</a></li>
                 {/for}
                 </ul>
               </li>
@@ -299,17 +297,17 @@
             <%= I18n.t "actions.transfer" %> <span class="caret"></span>
           </a>
           <ul class="dropdown-menu tree-transfer-form">
-            <li>
+            <li class="col-sm-12">
               <%= form_tag("#{root_path}archival_objects/${node_id}/transfer") do |f| %>
                 <%= form_context :transfer, {} do |form| %>
                 <fieldset>
                   <%= form.hidden_input "current_resource_id", "${root_object_id}" %>
-                  <div class="alert alert-error missing-ref-message" style="display: none;"><%= I18n.t "archival_object._frontend.messages.please_select_a_resource_for_transfer" %></div>
-                  <%= render_aspace_partial :partial => "resources/linker", :locals => { :form => form, :exclude_ids => [root_record.id] }%>
+                  <div class="alert alert-danger missing-ref-message" style="display: none;"><%= I18n.t "archival_object._frontend.messages.please_select_a_resource_for_transfer" %></div>
+                  <%= render_aspace_partial :partial => "resources/linker", :locals => { :form => form, :exclude_ids => [root_record.id], :layout => "stacked" }%>
                 </fieldset>
                 <div class="form-actions">
-                  <button class="btn btn-primary pull-left"><%= I18n.t("actions.transfer") %></button>
-                  <a class="btn btn-cancel pull-right" href="#"><%= I18n.t("actions.cancel") %></a>
+                  <button class="btn btn-default btn-primary pull-left"><%= I18n.t("actions.transfer") %></button>
+                  <a class="btn btn-default btn-cancel pull-right" href="#"><%= I18n.t("actions.cancel") %></a>
                 </div>
                 <% end %>
               <% end %>
@@ -324,12 +322,11 @@
           </a>
         </div>
       {/if}
-      </div>
     --></div>
 
     <div id="tree_finish_action_template"><!--
       <div class="pull-right">
-        <a href="${APP_PATH}${config.root_node_type}s/${config.root_object_id}${location.hash}" class="btn btn-xs btn-default btn-success"><%= I18n.t "actions.finish_editing" %></a>
+        <a href="${APP_PATH}${config.root_node_type}s/${config.root_object_id}${location.hash}" class="btn btn-xs btn-success"><%= I18n.t "actions.finish_editing" %></a>
       </div>
     --></div>
 
