@@ -43,6 +43,7 @@ module ResourceTrees
   # information from the tree anyway.
 
   # extended the properties to include resource and component IDs
+  # Using "component_id" to also contain the root resource ID, which is not the best, but I needed a hack to get the collection ID to show up in the tree view.
 
   def load_node_properties(node, properties, ids_of_interest = :all)
     super
