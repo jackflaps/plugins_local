@@ -18,14 +18,16 @@ class MARCModel < ASpaceExport::ExportModel
     :extents => :handle_extents,
     :language => df_handler('lang', '041', '0', ' ', 'a'),
     :external_documents => :handle_documents,
-	:dates => :handle_dates,
+    :dates => :handle_dates,
   }
+
+  # commenting out EAD locations until we have them linked
 
   @resource_map = {
     [:id_0, :id_1, :id_2, :id_3] => :handle_id,
     :notes => :handle_notes,
     :finding_aid_description_rules => df_handler('fadr', '040', ' ', ' ', 'e'),
-	#:ead_location => :handle_ead_loc
+    #:ead_location => :handle_ead_loc
   }
 
   attr_accessor :leader_string
@@ -193,7 +195,7 @@ class MARCModel < ASpaceExport::ExportModel
     ASpaceMappings::MARC21.get_marc_source_code(source)
   end
 
-  # Our Sierra is hacked so that form/genre headings only index when ind2=0.
+  # Our Sierra is set up so that form/genre headings only index when ind2=0.
   # I commented out the original line of code and added a custom one for us.
 
   def handle_subjects(subjects)
@@ -212,7 +214,7 @@ class MARCModel < ASpaceExport::ExportModel
                     when 'genre_form', 'style_period'
                       #['655', source_to_code(subject['source'])]
                       ['655', '0']
-					when 'occupation'
+                    when 'occupation'
                       ['656', '7']
                     when 'function'
                       ['656', '7']
@@ -513,28 +515,28 @@ class MARCModel < ASpaceExport::ExportModel
   
   def handle_documents(documents)
     documents.each do |doc|
-	  case doc['title']
-	    when 'Sierra record', 'Encore record'
-		  if doc['location'].start_with?('.')
-		    text = "recs=b,b3=z,ov=#{doc['location']}"
-		  else
-			text = "recs=b,b3=z,ov=.#{doc['location']}"
-		  end
+      case doc['title']
+        when 'Sierra record', 'Encore record'
+          if doc['location'].start_with?('.')
+            text = "recs=b,b3=z,ov=#{doc['location']}"
+          else
+            text = "recs=b,b3=z,ov=.#{doc['location']}"
+          end
           
-		  df('949', ' ', ' ').with_sfs(['a', text])
-		when 'Digital DU collection'
-		  df('856', '4', '1').with_sfs(
-		    ['z', "Access collection materials in Digital DU"],
-			['u', doc['location']]
-		  )
-		when 'OCLC record'
-		  text = "(OCoLC)"
-		  text += doc['location'].delete("http://worldcat.org/oclc/")
-		  df('035', ' ', ' ').with_sfs(['a', text])
-		else
-	      nil
-	  end
-	end
+          df('949', ' ', ' ').with_sfs(['a', text])
+        when 'Digital DU collection'
+          df('856', '4', '1').with_sfs(
+            ['z', "Access collection materials in Digital DU"],
+            ['u', doc['location']]
+          )
+        when 'OCLC record'
+          text = "(OCoLC)"
+          text += doc['location'].delete("http://worldcat.org/oclc/")
+          df('035', ' ', ' ').with_sfs(['a', text])
+        else
+          nil
+      end
+    end
   end
 
   
