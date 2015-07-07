@@ -103,10 +103,16 @@ class MARCModel < ASpaceExport::ExportModel
   def self.from_resource(obj)
     marc = self.from_archival_object(obj)
     marc.apply_map(obj, @resource_map)
-    marc.leader_string = "00000np$ a2200000 u 4500"
+    marc.leader_string = "00000np$aa2200000 u 4500"
     marc.leader_string[7] = obj.level == 'item' ? 'm' : 'c'
 
     marc.controlfield_string = assemble_controlfield_string(obj)
+
+    # RDA 33x field defaults
+
+    marc.df('336', ' ', ' ').with_sfs(['a', 'other'], ['b', 'xxx'], ['2', 'rdacontent'])
+    marc.df('337', ' ', ' ').with_sfs(['a', 'unmediated'], ['b', 'n'], ['2', 'rdamedia'])
+    marc.df('338', ' ', ' ').with_sfs(['a', 'other'], ['b', 'nz'], ['2', 'rdacarrier'])
 
     marc
   end
@@ -147,7 +153,10 @@ class MARCModel < ASpaceExport::ExportModel
 
   def handle_id(*ids)
     ids.reject!{|i| i.nil? || i.empty?}
-    df('099', ' ', ' ').with_sfs(['a', ids.join('.')])
+    df('099', ' ', '9').with_sfs(
+                                  ['a', 'MS'],
+                                  ['a', ids.join('.')]
+                                )
     df('852', ' ', ' ').with_sfs(['c', ids.join('.')])
   end
 
@@ -188,7 +197,7 @@ class MARCModel < ASpaceExport::ExportModel
                         ['a', sfa],
                         ['b', repo['name']]
                       )
-    df('040', ' ', ' ').with_sfs(['a', repo['org_code']], ['c', repo['org_code']])
+    df('040', ' ', ' ').with_sfs(['a', repo['org_code']], ['b', 'eng'], ['c', repo['org_code']])
   end
 
   def source_to_code(source)
