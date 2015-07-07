@@ -27,7 +27,7 @@ class MARCModel < ASpaceExport::ExportModel
     [:id_0, :id_1, :id_2, :id_3] => :handle_id,
     :notes => :handle_notes,
     :finding_aid_description_rules => df_handler('fadr', '040', ' ', ' ', 'e'),
-    #:ead_location => :handle_ead_loc
+    :ead_location => :handle_ead_loc
   }
 
   attr_accessor :leader_string
@@ -159,14 +159,14 @@ class MARCModel < ASpaceExport::ExportModel
   def handle_dates(dates)
     return false if dates.empty?
 
-    dates = [["single", "inclusive", "range"], ["bulk"]].map {|types| 
-      dates.find {|date| types.include? date['date_type'] } 
+    dates = [["single", "inclusive", "range"], ["bulk"]].map {|types|
+      dates.find {|date| types.include? date['date_type'] }
     }.compact
 
     dates.each do |date|
-      code = date['date_type'] == 'bulk' ? 'g' : 'f' 
+      code = date['date_type'] == 'bulk' ? 'g' : 'f'
       val = nil
-      if date['expression'] && date['date_type'] != 'bulk' 
+      if date['expression'] && date['date_type'] != 'bulk'
         val = date['expression']
       elsif date['date_type'] == 'single'
         val = date['begin']
@@ -370,7 +370,7 @@ class MARCModel < ASpaceExport::ExportModel
     creators = linked_agents.select{|a| a['role'] == 'creator'}[1..-1] || []
     creators = creators + linked_agents.select{|a| a['role'] == 'source'}
 
-    creators.each do |link|
+    creators.each_with_index do |link, i|
       creator = link['_resolved']
       name = creator['display_name']
       relator = link['relator']
@@ -423,10 +423,11 @@ class MARCModel < ASpaceExport::ExportModel
                 ['d', name['dates']],
                 ['g', name['qualifier']],
               ]
+
       end
 
       sfs << relator_sf
-      df(code, ind1, ind2).with_sfs(*sfs)
+      df(code, ind1, ind2, i).with_sfs(*sfs)
     end
 
   end
@@ -512,7 +513,7 @@ class MARCModel < ASpaceExport::ExportModel
     end
   end
 
-  
+
   def handle_documents(documents)
     documents.each do |doc|
       case doc['title']
@@ -522,7 +523,7 @@ class MARCModel < ASpaceExport::ExportModel
           else
             text = "recs=b,b3=z,ov=.#{doc['location']}"
           end
-          
+
           df('949', ' ', ' ').with_sfs(['a', text])
         when 'Digital DU collection'
           df('856', '4', '1').with_sfs(
@@ -539,8 +540,9 @@ class MARCModel < ASpaceExport::ExportModel
     end
   end
 
-  
+
   def handle_ead_loc(ead_loc)
+    return false unless ead_loc
     df('555', ' ', ' ').with_sfs(
                                   ['a', "Finding aid online:"],
                                   ['u', ead_loc]
