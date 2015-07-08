@@ -21,8 +21,6 @@ class MARCModel < ASpaceExport::ExportModel
     :dates => :handle_dates,
   }
 
-  # commenting out EAD locations until we have them linked
-
   @resource_map = {
     [:id_0, :id_1, :id_2, :id_3] => :handle_id,
     :notes => :handle_notes,
@@ -153,11 +151,9 @@ class MARCModel < ASpaceExport::ExportModel
 
   def handle_id(*ids)
     ids.reject!{|i| i.nil? || i.empty?}
-    df('099', ' ', '9').with_sfs(
-                                  ['a', 'MS'],
-                                  ['a', ids.join('.')]
-                                )
-    df('852', ' ', ' ').with_sfs(['c', ids.join('.')])
+    # add a local 'MS' indicator as the first 099|a
+    df('099', ' ', '9').with_sfs(['a', 'MS'], ['a', ids.join('.')])
+	df('852', ' ', ' ').with_sfs(['c', ids.join('.')])
   end
 
 
@@ -184,6 +180,11 @@ class MARCModel < ASpaceExport::ExportModel
       end
 
       df('245', '1', '0').with_sfs([code, val])
+
+      # export the primary date as a 264, unless no date exists in ArchivesSpace
+	  if code == 'f' && val != 'Date Not Yet Determined'
+        df('264', ' ', '0').with_sfs(['c', val])
+      end
     end
   end
 
@@ -193,19 +194,14 @@ class MARCModel < ASpaceExport::ExportModel
 
     sfa = repo['org_code'] ? repo['org_code'] : "Repository: #{repo['repo_code']}"
 
-    df('852', ' ', ' ').with_sfs(
-                        ['a', sfa],
-                        ['b', repo['name']]
-                      )
-    df('040', ' ', ' ').with_sfs(['a', repo['org_code']], ['b', 'eng'], ['c', repo['org_code']])
+    df('852', ' ', ' ').with_sfs(['a', sfa], ['b', repo['name']])
+    # customized 040 datafield to output our OCLC code instead of our MARC code    
+	df('040', ' ', ' ').with_sfs(['a', 'DVP'], ['b', 'eng'], ['c', 'DVP'])
   end
 
   def source_to_code(source)
     ASpaceMappings::MARC21.get_marc_source_code(source)
   end
-
-  # Our Sierra is set up so that form/genre headings only index when ind2=0.
-  # I commented out the original line of code and added a custom one for us.
 
   def handle_subjects(subjects)
     subjects.each do |link|
@@ -216,17 +212,24 @@ class MARCModel < ASpaceExport::ExportModel
                       ['630', source_to_code(subject['source'])]
                     when 'temporal'
                       ['648', source_to_code(subject['source'])]
-                    when 'topical'
-                      ['650', source_to_code(subject['source'])]
+                    
+					# part one of hack to encode buildings as 610s
+					when 'topical'
+                      if subject['source'] == 'built'
+                        ['610', '7']
+					  else
+                        ['650', source_to_code(subject['source'])]
+                      end
                     when 'geographic', 'cultural_context'
                       ['651', source_to_code(subject['source'])]
+
+                    # encode 655 ind2='0' until Sierra indexes them properly
                     when 'genre_form', 'style_period'
-                      #['655', source_to_code(subject['source'])]
                       ['655', '0']
                     when 'occupation'
-                      ['656', '7']
+                      ['656', source_to_code(subject['source'])]
                     when 'function'
-                      ['656', '7']
+                      ['657', source_to_code(subject['source'])]
                     else
                       ['650', source_to_code(subject['source'])]
                     end
@@ -243,8 +246,14 @@ class MARCModel < ASpaceExport::ExportModel
         sfs << [tag, t['term']]
       end
 
+      # part two of hack to encode buildings as 610s
+
       if ind2 == '7'
-        sfs << ['2', subject['source']]
+        if subject['source'] == 'built'
+          sfs << ['2', 'local']
+        else
+          sfs << ['2', subject['source']]
+        end
       end
 
       df!(code, ' ', ind2).with_sfs(*sfs)
@@ -379,6 +388,7 @@ class MARCModel < ASpaceExport::ExportModel
     creators = linked_agents.select{|a| a['role'] == 'creator'}[1..-1] || []
     creators = creators + linked_agents.select{|a| a['role'] == 'source'}
 
+    # this fixes a bug where when it was just creators.each, all 7xx fields of one agent type exported into a single datafield
     creators.each_with_index do |link, i|
       creator = link['_resolved']
       name = creator['display_name']
@@ -514,14 +524,22 @@ class MARCModel < ASpaceExport::ExportModel
       e = ext['number']
       e << " #{I18n.t('enumerations.extent_extent_type.'+ext['extent_type'], :default => ext['extent_type'])}"
 
+      # export container summary and dimensions into 300|b and 300|c subfields
+
       if ext['container_summary']
-        e << " (#{ext['container_summary']})"
+        s = "(#{ext['container_summary']})"
       end
 
-      df!('300').with_sfs(['a', e])
+	  if ext['dimensions']
+        d = ext['dimensions']
+      end
+
+      df!('300').with_sfs(['a', e], ['b', s], ['c', d])
     end
   end
 
+
+  # external_documents handler for links to Sierra, Islandora, OCLC
 
   def handle_documents(documents)
     documents.each do |doc|
@@ -551,15 +569,10 @@ class MARCModel < ASpaceExport::ExportModel
 
 
   def handle_ead_loc(ead_loc)
+    # don't export a finding aid location if none exists for the collection
     return false unless ead_loc
-    df('555', ' ', ' ').with_sfs(
-                                  ['a', "Finding aid online:"],
-                                  ['u', ead_loc]
-                                )
-    df('856', '4', '2').with_sfs(
-                                  ['z', "Finding aid online:"],
-                                  ['u', ead_loc]
-                                )
+    df('555', ' ', ' ').with_sfs(['a', "Finding aid online:"], ['u', ead_loc])
+    df('856', '4', '2').with_sfs(['z', "Finding aid online:"], ['u', ead_loc])
   end
 
 end
