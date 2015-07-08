@@ -180,7 +180,7 @@ class MARCModel < ASpaceExport::ExportModel
       elsif date['date_type'] == 'single'
         val = date['begin']
       else
-        val = "#{date['begin']} - #{date['end']}"
+        val = "#{date['begin']}-#{date['end']}"
       end
 
       df('245', '1', '0').with_sfs([code, val])
