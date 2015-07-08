@@ -213,11 +213,11 @@ class MARCModel < ASpaceExport::ExportModel
                     when 'temporal'
                       ['648', source_to_code(subject['source'])]
                     
-					# part one of hack to encode buildings as 610s
-					when 'topical'
+                    # part one of hack to encode buildings as 610s
+                    when 'topical'
                       if subject['source'] == 'built'
                         ['610', '7']
-					  else
+                      else
                         ['650', source_to_code(subject['source'])]
                       end
                     when 'geographic', 'cultural_context'
