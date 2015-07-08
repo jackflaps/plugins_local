@@ -182,7 +182,7 @@ class MARCModel < ASpaceExport::ExportModel
       df('245', '1', '0').with_sfs([code, val])
 
       # export the primary date as a 264, unless no date exists in ArchivesSpace
-	  if code == 'f' && val != 'Date Not Yet Determined'
+      if code == 'f' && val != 'Date Not Yet Determined'
         df('264', ' ', '0').with_sfs(['c', val])
       end
     end
@@ -195,8 +195,8 @@ class MARCModel < ASpaceExport::ExportModel
     sfa = repo['org_code'] ? repo['org_code'] : "Repository: #{repo['repo_code']}"
 
     df('852', ' ', ' ').with_sfs(['a', sfa], ['b', repo['name']])
-    # customized 040 datafield to output our OCLC code instead of our MARC code    
-	df('040', ' ', ' ').with_sfs(['a', 'DVP'], ['b', 'eng'], ['c', 'DVP'])
+    # customized 040 datafield to output our OCLC code instead of our MARC code
+    df('040', ' ', ' ').with_sfs(['a', 'DVP'], ['b', 'eng'], ['c', 'DVP'])
   end
 
   def source_to_code(source)
