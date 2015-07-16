@@ -212,7 +212,7 @@ class MARCModel < ASpaceExport::ExportModel
                       ['630', source_to_code(subject['source'])]
                     when 'temporal'
                       ['648', source_to_code(subject['source'])]
-                    
+
                     # part one of hack to encode buildings as 610s
                     when 'topical'
                       if subject['source'] == 'built'
@@ -524,17 +524,13 @@ class MARCModel < ASpaceExport::ExportModel
       e = ext['number']
       e << " #{I18n.t('enumerations.extent_extent_type.'+ext['extent_type'], :default => ext['extent_type'])}"
 
-      # export container summary and dimensions into 300|b and 300|c subfields
+      # export dimensions into 300|c subfield
 
-      if ext['container_summary']
-        s = "(#{ext['container_summary']})"
-      end
-
-	  if ext['dimensions']
+      if ext['dimensions']
         d = ext['dimensions']
       end
 
-      df!('300').with_sfs(['a', e], ['b', s], ['c', d])
+      df!('300').with_sfs(['a', e], ['c', d])
     end
   end
 
