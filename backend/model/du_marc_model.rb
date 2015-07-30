@@ -111,19 +111,6 @@ class MARCModel < ASpaceExport::ExportModel
     marc.df('337', ' ', ' ').with_sfs(['a', 'unmediated'], ['b', 'n'], ['2', 'rdamedia'])
     marc.df('338', ' ', ' ').with_sfs(['a', 'other'], ['b', 'nz'], ['2', 'rdacarrier'])
 
-    # Placeholder 949 field for item record (used if record is new)
-    marc.df('949', ' ', '1').with_sfs(
-      ['z', '099 9'],
-      ['a', 'MS'],
-      ['a', ids.join('.')],
-      ['c', 'Box 1'],
-      ['l', 'hscol'], # assumes location is Hampden Center; change accordingly
-      ['r', '-'],
-      ['s', 'v'],
-      ['t', '23'],
-      ['u', 'SEND PATRON TO SPECIAL COLLECTIONS TO MAKE ARRANGEMENTS FOR USE']
-    )
-
     marc
   end
 
@@ -165,7 +152,20 @@ class MARCModel < ASpaceExport::ExportModel
     ids.reject!{|i| i.nil? || i.empty?}
     # add a local 'MS' indicator as the first 099|a
     df('099', ' ', '9').with_sfs(['a', 'MS'], ['a', ids.join('.')])
-	df('852', ' ', ' ').with_sfs(['c', ids.join('.')])
+	  df('852', ' ', ' ').with_sfs(['c', ids.join('.')])
+
+    # we handle the item record 949 here since it requires collection IDs
+    df('949', ' ', '1').with_sfs(
+      ['z', '099 9'],
+      ['a', 'MS'],
+      ['a', ids.join('.')],
+      ['c', 'Box 1'],
+      ['l', 'hscol'], # assumes location is Hampden Center; change accordingly
+      ['r', '-'],
+      ['s', 'v'],
+      ['t', '23'],
+      ['u', 'SEND PATRON TO SPECIAL COLLECTIONS TO MAKE ARRANGEMENTS FOR USE']
+    )
   end
 
 
