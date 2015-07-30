@@ -107,10 +107,22 @@ class MARCModel < ASpaceExport::ExportModel
     marc.controlfield_string = assemble_controlfield_string(obj)
 
     # RDA 33x field defaults
-
     marc.df('336', ' ', ' ').with_sfs(['a', 'other'], ['b', 'xxx'], ['2', 'rdacontent'])
     marc.df('337', ' ', ' ').with_sfs(['a', 'unmediated'], ['b', 'n'], ['2', 'rdamedia'])
     marc.df('338', ' ', ' ').with_sfs(['a', 'other'], ['b', 'nz'], ['2', 'rdacarrier'])
+
+    # Placeholder 949 field for item record (used if record is new)
+    marc.df('949', ' ', '1').with_sfs(
+      ['z', '099 9'],
+      ['a', 'MS'],
+      ['a', ids.join('.')],
+      ['c', 'Box 1'],
+      ['l', 'hscol'], # assumes location is Hampden Center; change accordingly
+      ['r', '-'],
+      ['s', 'v'],
+      ['t', '23'],
+      ['u', 'SEND PATRON TO SPECIAL COLLECTIONS TO MAKE ARRANGEMENTS FOR USE']
+    )
 
     marc
   end
@@ -195,13 +207,16 @@ class MARCModel < ASpaceExport::ExportModel
     sfa = repo['org_code'] ? repo['org_code'] : "Repository: #{repo['repo_code']}"
 
     df('852', ' ', ' ').with_sfs(['a', sfa], ['b', repo['name']])
-    # customized 040 datafield to output our OCLC code instead of our MARC code
+    # We use our OCLC code instead of our MARC code in the 040
     df('040', ' ', ' ').with_sfs(['a', 'DVP'], ['b', 'eng'], ['c', 'DVP'])
   end
 
-  def source_to_code(source)
-    ASpaceMappings::MARC21.get_marc_source_code(source)
-  end
+  # At the moment we can't use this; Sierra can't index ind2s that aren't 0.
+  # We'll bring this back once it can make use of it again.
+
+  #def source_to_code(source)
+  #  ASpaceMappings::MARC21.get_marc_source_code(source)
+  #end
 
   def handle_subjects(subjects)
     subjects.each do |link|
@@ -209,29 +224,27 @@ class MARCModel < ASpaceExport::ExportModel
       term, *terms = subject['terms']
       code, ind2 =  case term['term_type']
                     when 'uniform_title'
-                      ['630', source_to_code(subject['source'])]
+                      ['630', '0']
                     when 'temporal'
-                      ['648', source_to_code(subject['source'])]
+                      ['648', '0']
 
-                    # part one of hack to encode buildings as 610s
+                    # part one of hack to export headings for buildings as 610s
                     when 'topical'
                       if subject['source'] == 'built'
-                        ['610', '7']
+                        ['610', '0']
                       else
-                        ['650', source_to_code(subject['source'])]
+                        ['650', '0']
                       end
                     when 'geographic', 'cultural_context'
-                      ['651', source_to_code(subject['source'])]
-
-                    # encode 655 ind2='0' until Sierra indexes them properly
+                      ['651', '0']
                     when 'genre_form', 'style_period'
                       ['655', '0']
                     when 'occupation'
-                      ['656', source_to_code(subject['source'])]
+                      ['656', '0']
                     when 'function'
-                      ['657', source_to_code(subject['source'])]
+                      ['657', '0']
                     else
-                      ['650', source_to_code(subject['source'])]
+                      ['650', '0']
                     end
       sfs = [['a', term['term']]]
 
@@ -246,8 +259,7 @@ class MARCModel < ASpaceExport::ExportModel
         sfs << [tag, t['term']]
       end
 
-      # part two of hack to encode buildings as 610s
-
+      # part two of hack to export headings for buildings as 610s
       if ind2 == '7'
         if subject['source'] == 'built'
           sfs << ['2', 'local']
@@ -325,7 +337,7 @@ class MARCModel < ASpaceExport::ExportModel
       name = subject['display_name']
       relator = link['relator']
       terms = link['terms']
-      ind2 = source_to_code(name['source'])
+      ind2 = '0'
 
       case subject['agent_type']
 
@@ -377,9 +389,12 @@ class MARCModel < ASpaceExport::ExportModel
         sfs << [(tag), t['term']]
       end
 
-      if ind2 == '7'
-        sfs << ['2', subject['source']]
-      end
+      # since we can't have ind2 = '7' right now I have to comment this out
+
+      #if ind2 == '7'
+      #  sfs << ['2', subject['source']]
+      #end
+      sfs << ['2', subject['source']]
 
       df(code, ind1, ind2, i).with_sfs(*sfs)
     end
