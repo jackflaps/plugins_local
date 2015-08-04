@@ -224,27 +224,27 @@ class MARCModel < ASpaceExport::ExportModel
       term, *terms = subject['terms']
       code, ind2 =  case term['term_type']
                     when 'uniform_title'
-                      ['630', '0']
+                      ['630', source_to_code(subject['source'])]
                     when 'temporal'
-                      ['648', '0']
+                      ['648', source_to_code(subject['source'])]
 
                     # part one of hack to export headings for buildings as 610s
                     when 'topical'
                       if subject['source'] == 'built'
-                        ['610', '0']
+                        ['610', '7']
                       else
-                        ['650', '0']
+                        ['650', source_to_code(subject['source'])]
                       end
                     when 'geographic', 'cultural_context'
-                      ['651', '0']
+                      ['651', source_to_code(subject['source'])]
                     when 'genre_form', 'style_period'
-                      ['655', '0']
+                      ['655', source_to_code(subject['source'])]
                     when 'occupation'
-                      ['656', '0']
+                      ['656', '7']
                     when 'function'
-                      ['657', '0']
+                      ['657', '7']
                     else
-                      ['650', '0']
+                      ['650', source_to_code(subject['source'])]
                     end
       sfs = [['a', term['term']]]
 
@@ -337,7 +337,7 @@ class MARCModel < ASpaceExport::ExportModel
       name = subject['display_name']
       relator = link['relator']
       terms = link['terms']
-      ind2 = '0'
+      ind2 = source_to_code(name['source'])
 
       case subject['agent_type']
 
