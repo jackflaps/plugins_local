@@ -555,14 +555,16 @@ class MARCModel < ASpaceExport::ExportModel
   def handle_documents(documents)
     documents.each do |doc|
       case doc['title']
+
+        # we do this for Sierra to let it know which bib record to overlay
         when 'Sierra record', 'Encore record'
           if doc['location'].start_with?('.')
-            text = "recs=b,b3=z,ov=#{doc['location']}"
+            text = "#{doc['location']}"
           else
-            text = "recs=b,b3=z,ov=.#{doc['location']}"
+            text = ".#{doc['location']}"
           end
 
-          df('949', ' ', ' ').with_sfs(['a', text])
+          df('907', ' ', ' ').with_sfs(['a', text])
         when 'Digital DU collection'
           df('856', '4', '1').with_sfs(
             ['z', "Access collection materials in Digital DU"],
