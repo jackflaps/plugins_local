@@ -211,12 +211,9 @@ class MARCModel < ASpaceExport::ExportModel
     df('040', ' ', ' ').with_sfs(['a', 'DVP'], ['b', 'eng'], ['c', 'DVP'])
   end
 
-  # At the moment we can't use this; Sierra can't index ind2s that aren't 0.
-  # We'll bring this back once it can make use of it again.
-
-  #def source_to_code(source)
-  #  ASpaceMappings::MARC21.get_marc_source_code(source)
-  #end
+  def source_to_code(source)
+    ASpaceMappings::MARC21.get_marc_source_code(source)
+  end
 
   def handle_subjects(subjects)
     subjects.each do |link|
@@ -558,12 +555,12 @@ class MARCModel < ASpaceExport::ExportModel
 
         # we do this for Sierra to let it know which bib record to overlay
         when 'Sierra record', 'Encore record'
-          if doc['location'].start_with?('.')
-            text = "#{doc['location']}"
-          else
-            text = ".#{doc['location']}"
-          end
-
+		  if doc['location'].start_with?('.')
+	        text = "#{doc['location'].sub('/^\./','')}"
+		  else
+			text = "#{doc['location']}"
+		  end
+		  
           df('907', ' ', ' ').with_sfs(['a', text])
         when 'Digital DU collection'
           df('856', '4', '1').with_sfs(
