@@ -43,7 +43,9 @@ class MODSSerializer < ASpaceExport::Serializer
       end
 
       #digitalOrigin
-      xml.digitalOrigin mods.digital_origin
+      if mods.digital_origin
+        xml.digitalOrigin mods.digital_origin
+      end
     }
 
     mods.notes.each do |note|
