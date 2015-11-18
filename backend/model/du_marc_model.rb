@@ -30,6 +30,7 @@ class MARCModel < ASpaceExport::ExportModel
 
   attr_accessor :leader_string
   attr_accessor :controlfield_string
+  attr_accessor :local_controlfield_string
 
   @@datafield = Class.new do
 
@@ -105,6 +106,7 @@ class MARCModel < ASpaceExport::ExportModel
     marc.leader_string[7] = obj.level == 'item' ? 'm' : 'c'
 
     marc.controlfield_string = assemble_controlfield_string(obj)
+    marc.local_controlfield_string = obj.user_defined['string_1']
 
     # RDA 33x field defaults
     marc.df('336', ' ', ' ').with_sfs(['a', 'other'], ['b', 'xxx'], ['2', 'rdacontent'])
@@ -555,11 +557,11 @@ class MARCModel < ASpaceExport::ExportModel
 
         # we do this for Sierra to let it know which bib record to overlay
         when 'Sierra record', 'Encore record'
-		    if doc['location'].start_with?('.')
-	        text = "#{doc['location'].sub('/^\./','')}"
-		    else
-			    text = "#{doc['location']}"
-		    end
+		      if doc['location'].start_with?('.')
+	          text = "#{doc['location'].sub('/^\./','')}"
+		      else
+			      text = "#{doc['location']}"
+		      end
 
           df('907', ' ', ' ').with_sfs(['a', text])
         when 'Digital DU collection'
