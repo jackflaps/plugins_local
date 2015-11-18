@@ -557,11 +557,11 @@ class MARCModel < ASpaceExport::ExportModel
 
         # we do this for Sierra to let it know which bib record to overlay
         when 'Sierra record', 'Encore record'
-		      if doc['location'].start_with?('.')
-	          text = "#{doc['location'].sub('/^\./','')}"
-		      else
-			      text = "#{doc['location']}"
-		      end
+          if doc['location'].start_with?('.')
+	        text = "#{doc['location'].sub('/^\./','')}"
+          else
+            text = "#{doc['location']}"
+          end
 
           df('907', ' ', ' ').with_sfs(['a', text])
         when 'Digital DU collection'
