@@ -25,7 +25,8 @@ class MARCModel < ASpaceExport::ExportModel
     [:id_0, :id_1, :id_2, :id_3] => :handle_id,
     :notes => :handle_notes,
     :finding_aid_description_rules => df_handler('fadr', '040', ' ', ' ', 'e'),
-    :ead_location => :handle_ead_loc
+    :ead_location => :handle_ead_loc,
+    :user_defined => :handle_user_defined
   }
 
   attr_accessor :leader_string
@@ -106,7 +107,6 @@ class MARCModel < ASpaceExport::ExportModel
     marc.leader_string[7] = obj.level == 'item' ? 'm' : 'c'
 
     marc.controlfield_string = assemble_controlfield_string(obj)
-    marc.local_controlfield_string = obj.user_defined['string_1']
 
     # RDA 33x field defaults
     marc.df('336', ' ', ' ').with_sfs(['a', 'other'], ['b', 'xxx'], ['2', 'rdacontent'])
@@ -585,6 +585,11 @@ class MARCModel < ASpaceExport::ExportModel
     return false unless ead_loc
     df('555', ' ', ' ').with_sfs(['a', "Finding aid online:"], ['u', ead_loc])
     df('856', '4', '2').with_sfs(['z', "Finding aid online:"], ['u', ead_loc])
+  end
+
+  def handle_user_defined(user_defined)
+    return false unless user_defined
+    marc.local_controlfield_string = user_defined['string_1']
   end
 
 end
