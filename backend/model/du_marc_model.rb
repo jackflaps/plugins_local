@@ -589,7 +589,21 @@ class MARCModel < ASpaceExport::ExportModel
 
   def handle_user_defined(user_defined)
     return false unless user_defined
-    marc.local_controlfield_string = user_defined['string_1']
+    marc.local_controlfield_string = user_defined['string_1'] if user_defined.has_key?('string_1')
+    if user_defined.has_key?('string_2')
+      if user_defined['string_2'].start_with?('.')
+        text = "#{user_defined['string_2'].sub(/^\./,'')}"
+      else
+        text = "#{user_defined['string_2']}"
+      end
+      df('907', ' ', ' ').with_sfs(['a', text])
+    end
+
+    if user_defined.has_key?('string_3')
+      text = "(OCoLC)"
+      text += user_defined['string_3'].delete("http://worldcat.org/oclc/")
+      df('035', ' ', ' ').with_sfs(['a', text])
+    end
   end
 
 end
