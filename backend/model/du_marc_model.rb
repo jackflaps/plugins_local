@@ -107,6 +107,9 @@ class MARCModel < ASpaceExport::ExportModel
     marc.leader_string[7] = obj.level == 'item' ? 'm' : 'c'
 
     marc.controlfield_string = assemble_controlfield_string(obj)
+		if obj.has_key?('user_defined')
+			marc.local_controlfield_string = obj['user_defined']['string_1'] if obj['user_defined'].has_key?('string_1')
+		end
 
     # RDA 33x field defaults
     marc.df('336', ' ', ' ').with_sfs(['a', 'other'], ['b', 'xxx'], ['2', 'rdacontent'])
@@ -589,7 +592,6 @@ class MARCModel < ASpaceExport::ExportModel
 
   def handle_user_defined(user_defined)
     return false unless user_defined
-    marc.local_controlfield_string = user_defined['string_1'] if user_defined.has_key?('string_1')
     if user_defined.has_key?('string_2')
       if user_defined['string_2'].start_with?('.')
         text = "#{user_defined['string_2'].sub(/^\./,'')}"
