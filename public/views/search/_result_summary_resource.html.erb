@@ -4,19 +4,17 @@
 
 <div id="public-result-summary">
 	<p><strong>ID:</strong> <%= resource['id_0'] %></p>
-	<p><strong>Creator:</strong>
 	<% resource['linked_agents'].each do |linked_agent| %>
 		<% id = JSONModel(linked_agent['_resolved']['jsonmodel_type']).id_for(linked_agent['_resolved']['uri']) %>
 		<% if linked_agent['role'] == "creator" %>
+			<p><strong>Creator:</strong></p>
 			<%= link_to(linked_agent['_resolved']['title'], {:controller => :records, :action => :agent, :id => id, :agent_type => linked_agent['_resolved']['jsonmodel_type']}) %>
 		<% end %>
 	<% end %>
 	</p>
-	<p><strong>Abstract:</strong> 
 	<% resource['notes'].each do |note| %>
 		<% if note['type'] == "abstract" %>
 			<%= note['content'][0].html_safe %>
 		<% end %>
 	<% end %>
-	</p>
 </div>
