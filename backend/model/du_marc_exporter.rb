@@ -48,7 +48,7 @@ class MARCSerializer < ASpaceExport::Serializer
 
         xml.controlfield(:tag => '001') {
           xml.text marc.local_controlfield_string
-        }
+        } unless marc.local_controlfield_string.nil?
 
         xml.controlfield(:tag => '008') {
          xml.text marc.controlfield_string
