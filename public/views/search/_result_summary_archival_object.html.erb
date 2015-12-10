@@ -6,8 +6,7 @@
 	<% archival_object['linked_agents'].each do |linked_agent| %>
 		<% id = JSONModel(linked_agent['_resolved']['jsonmodel_type']).id_for(linked_agent['_resolved']['uri']) %>
 		<% if linked_agent['role'] == "creator" %>
-			<p><strong>Creator:</strong></p>
-			<%= link_to(linked_agent['_resolved']['title'], {:controller => :records, :action => :agent, :id => id, :agent_type => linked_agent['_resolved']['jsonmodel_type']}) %>
+			<p><strong>Creator:</strong> <%= link_to(linked_agent['_resolved']['title'], {:controller => :records, :action => :agent, :id => id, :agent_type => linked_agent['_resolved']['jsonmodel_type']}) %></p>
 		<% end %>
 	<% end %>
 	<% archival_object['notes'].each do |note| %>
