@@ -1,8 +1,8 @@
 <% archival_object = JSON.parse(obj['json']) %>
 
-
 <div id="public-result-summary">
-	<p><strong>ID:</strong> <%= archival_object['component_id'] %></p>
+	<p><strong>Record ID:</strong> <%= archival_object['component_id'] %></p>
+	<p><strong>Component Level:</strong> <%= i18n_enum(:archival_object, 'level', archival_object['level']) %></p>
 	<% archival_object['linked_agents'].each do |linked_agent| %>
 		<% id = JSONModel(linked_agent['_resolved']['jsonmodel_type']).id_for(linked_agent['_resolved']['uri']) %>
 		<% if linked_agent['role'] == "creator" %>
