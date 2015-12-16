@@ -8,7 +8,7 @@
 	<% end %>
 	<% digital_object['notes'].each do |note| %>
 		<% if note['type'] == "summary" %>
-			<p><strong>Abstract:</strong> <%= note['content'][0].html_safe %></p>
+			<p><strong>Summary:</strong> <%= note['content'][0].html_safe %></p>
 		<% end %>
 	<% end %>
 </div>
