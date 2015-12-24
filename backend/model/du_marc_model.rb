@@ -414,7 +414,7 @@ class MARCModel < ASpaceExport::ExportModel
       role = link['role']
 
       if relator
-        relator_sf = ['4', relator]
+        relator_sf = ['e', I18n.t("enumerations.linked_agent_archival_record_relators.#{relator}").downcase]
       elsif role == 'source'
         relator_sf =  ['e', 'former owner']
       else
