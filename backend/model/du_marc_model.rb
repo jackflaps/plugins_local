@@ -570,7 +570,7 @@ class MARCModel < ASpaceExport::ExportModel
           df('907', ' ', ' ').with_sfs(['a', text])
         when 'Digital DU collection'
           df('856', '4', '1').with_sfs(
-            ['z', "Access collection materials in Digital DU"],
+            ['z', "Access collection materials in Special Collections @ DU"],
             ['u', doc['location']]
           )
         when 'OCLC record'
