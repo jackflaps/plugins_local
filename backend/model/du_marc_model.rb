@@ -558,25 +558,11 @@ class MARCModel < ASpaceExport::ExportModel
   def handle_documents(documents)
     documents.each do |doc|
       case doc['title']
-
-        # we do this for Sierra to let it know which bib record to overlay
-        when 'Sierra record', 'Encore record'
-          if doc['location'].start_with?('.')
-	        text = "#{doc['location'].sub('/^\./','')}"
-          else
-            text = "#{doc['location']}"
-          end
-
-          df('907', ' ', ' ').with_sfs(['a', text])
-        when 'Digital DU collection'
+        when 'Special Collections @ DU'
           df('856', '4', '1').with_sfs(
             ['z', "Access collection materials in Special Collections @ DU"],
             ['u', doc['location']]
           )
-        when 'OCLC record'
-          text = "(OCoLC)"
-          text += doc['location'].delete("http://worldcat.org/oclc/")
-          df('035', ' ', ' ').with_sfs(['a', text])
         else
           nil
       end
@@ -591,6 +577,7 @@ class MARCModel < ASpaceExport::ExportModel
     df('856', '4', '2').with_sfs(['z', "Finding aid online:"], ['u', ead_loc])
   end
 
+  # handle user-defined strings such as local bib number and OCLC number
   def handle_user_defined(user_defined)
     return false unless user_defined
     if user_defined.has_key?('string_2')
