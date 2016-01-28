@@ -1,0 +1,35 @@
+en:
+  enumerations:
+    linked_agent_event_roles:
+      donee: Donee
+      donor: Donor
+    event_event_type:
+      condition_report: Condition Report
+      processing_in_progress: Processing In Progress
+    date_label:
+      acquisition: Acquisition
+      record_keeping: Record Keeping
+    name_source:
+      prov: Provisionally Established Name Entry
+      viaf: Virtual International Authority File
+    subject_source:
+      built: Local Built Environment Vocabulary
+      lcgft: "Library Of Congress Genre/Form Terms"
+      prov: Provisionally Established Entry
+      tucua: Thesaurus for Use in College and University Archives
+      viaf: Virtual International Authority File
+    user_defined_enum_1:
+      complete: Complete
+      minimal: Minimal
+      new: New
+      oclc_complete: OCLC Complete
+      on_sar: Subject Access Review
+    user_defined_enum_2:
+      born_digital: Born Digital
+      digitized_micro: Digitized Microfilm
+      digitized_other: Digitized Other Analog
+      reformatted: Reformatted Digital
+
+  enumeration_names:
+    user_defined_enum_1: Resource Cataloging Record Status
+    user_defined_enum_2: Digital Object MODS Digital Origin
