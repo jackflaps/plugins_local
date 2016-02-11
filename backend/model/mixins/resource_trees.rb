@@ -52,7 +52,7 @@ module ResourceTrees
     properties[node.id][:component_id] = node.component_id
 
     set_node_level(node, properties[node.id])
-	set_node_instances(node, properties[node.id]) if ids_of_interest != :all
+    set_node_instances(node, properties[node.id]) if ids_of_interest != :all
   end
 
 
@@ -60,8 +60,8 @@ module ResourceTrees
     super
 
     properties[:component_id] = self[:id_0]
-	set_node_level(self, properties)
-	set_node_instances(self, properties) if ids_of_interest != :all
+    set_node_level(self, properties)
+    set_node_instances(self, properties) if ids_of_interest != :all
   end
 
 end
