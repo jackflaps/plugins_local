@@ -1,3 +1,6 @@
 en:
+  user_defined: &user_defined_attributes
+    enum_1: Cataloging Record Status
+    enum_2: MODS Digital Origin
   search_sorting:
     term_type: Term Type
