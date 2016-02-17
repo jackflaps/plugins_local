@@ -43,7 +43,7 @@ class MODSSerializer < ASpaceExport::Serializer
       end
 
       #digitalOrigin
-      if mods.digital_origin
+      unless mods.digital_origin.nil?
         xml.digitalOrigin mods.digital_origin
       end
     }

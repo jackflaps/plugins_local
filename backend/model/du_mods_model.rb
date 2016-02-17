@@ -12,10 +12,11 @@ class MODSModel < ASpaceExport::ExportModel
   attr_accessor :type_of_resource
   attr_accessor :parts
   attr_accessor :repository_note
+
+  # additional attributes
   attr_accessor :digital_origin
 
   @archival_object_map = {
-    :title => :title=,
     :language => :language_term=,
     :extents => :handle_extent,
     :subjects => :handle_subjects,
@@ -26,7 +27,6 @@ class MODSModel < ASpaceExport::ExportModel
   @digital_object_map = {
     :tree => :handle_tree,
   }
-
 
   @name_type_map = {
     'agent_person' => 'personal',
@@ -43,7 +43,6 @@ class MODSModel < ASpaceExport::ExportModel
     'prefix' => 'termsOfAddress'
   }
 
-
   def initialize
     @extents = []
     @notes = []
@@ -52,11 +51,13 @@ class MODSModel < ASpaceExport::ExportModel
     @parts = []
   end
 
-
   # meaning, 'archival object' in the abstract
   def self.from_archival_object(obj)
 
     mods = self.new
+
+    # taking a stab at including date expression in titleInfo/title
+    mods.title = build_title(obj)
 
     mods.apply_map(obj, @archival_object_map)
 
@@ -72,21 +73,22 @@ class MODSModel < ASpaceExport::ExportModel
       mods.type_of_resource = obj.digital_object_type
     end
 
-    # digitalOrigin
-    mods.digital_origin = case obj.user_defined['enum_2']
-      when 'born_digital'
-        "born digital"
-      when 'digitized_micro'
-        "digitized microfilm"
-      when 'digitized_other'
-        "digitized other analog"
-      when 'reformatted'
-        "reformatted digital"
+    # digitalOrigin (will omit if none is specified in the user defined fields)
+    if obj.user_defined['enum_2']
+      mods.digital_origin = case obj.user_defined['enum_2']
+        when 'born_digital'
+          "born digital"
+        when 'digitized_micro'
+          "digitized microfilm"
+        when 'digitized_other'
+          "digitized other analog"
+        when 'reformatted'
+          "reformatted digital"
+        else nil
+      end
     end
 
     mods.apply_map(obj, @digital_object_map, opts)
-
-    mods.repository_note = build_repo_note(obj.repository['_resolved'])
 
     mods
   end
@@ -112,25 +114,17 @@ class MODSModel < ASpaceExport::ExportModel
     @@mods_note.new(*a)
   end
 
+  def self.build_title(obj)
+    mods_title = obj.title
 
-  def self.build_repo_note(repo_record)
-    agent = repo_record['agent_representation']['_resolved']
-    contacts = agent['agent_contacts']
-
-    contents = [repo_record['name']]
-    if contacts.length > 0
-      contents += %w(address_1 address_2 address_3 city region post_code country).map {|part|
-        contacts[0][part] }.compact
+    obj.dates.each do |date|
+      if date['label'] == "creation"
+        mods_title << ", #{date['expression']}"
+      end
     end
 
-    contents = contents.join(', ')
-    if repo_record['url']
-      contents << " (#{repo_record['url']})"
-    end
-
-    new_mods_note('note', nil, "Digital object made available by", contents)
+    mods_title
   end
-
 
   def new_mods_note(*a)
     self.class.new_mods_note(*a)
