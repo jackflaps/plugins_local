@@ -26,6 +26,7 @@ class MODSModel < ASpaceExport::ExportModel
 
   @digital_object_map = {
     :tree => :handle_tree,
+    :user_defined => :handle_digital_origin,
   }
 
   @name_type_map = {
@@ -71,21 +72,6 @@ class MODSModel < ASpaceExport::ExportModel
 
     if obj.respond_to? :digital_object_type
       mods.type_of_resource = obj.digital_object_type
-    end
-
-    # digitalOrigin (will omit if none is specified in the user defined fields)
-    if obj.user_defined['enum_2']
-      mods.digital_origin = case obj.user_defined['enum_2']
-        when 'born_digital'
-          "born digital"
-        when 'digitized_micro'
-          "digitized microfilm"
-        when 'digitized_other'
-          "digitized other analog"
-        when 'reformatted'
-          "reformatted digital"
-        else nil
-      end
     end
 
     mods.apply_map(obj, @digital_object_map, opts)
@@ -247,6 +233,24 @@ class MODSModel < ASpaceExport::ExportModel
         end
       end
     end
+  end
+
+  def handle_digital_origin(user_defined)
+    return unless user_defined
+    digital_origin = case user_defined['enum_2']
+    when 'born_digital'
+      "born digital"
+    when 'digitized_micro'
+      "digitized microfilm"
+    when 'digitized_other'
+      "digitized other analog"
+    when 'reformatted'
+      "reformatted digital"
+    else
+      nil
+    end
+
+    self.digital_origin = digital_origin
   end
 
 end
