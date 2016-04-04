@@ -42,13 +42,12 @@ module ResourceTrees
   # the entire tree is the indexer, and it doesn't need instance/container
   # information from the tree anyway.
 
-  # extended the properties to include resource and component IDs
-  # Using "component_id" to also contain the root resource ID, which is not the best, but I needed a hack to get the collection ID to show up in the tree view.
-
   def load_node_properties(node, properties, ids_of_interest = :all)
     super
 
     properties[node.id][:title] = node.display_string
+
+    # populate the component ID with the node component_id
     properties[node.id][:component_id] = node.component_id
 
     set_node_level(node, properties[node.id])
@@ -59,7 +58,9 @@ module ResourceTrees
   def load_root_properties(properties, ids_of_interest = :all)
     super
 
+    # populate the component ID using the resource id_0 (identifier)
     properties[:component_id] = self[:id_0]
+
     set_node_level(self, properties)
     set_node_instances(self, properties) if ids_of_interest != :all
   end
