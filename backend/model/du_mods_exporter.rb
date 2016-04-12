@@ -38,7 +38,13 @@ class MODSSerializer < ASpaceExport::Serializer
     }
 
     case
-    when mods.extents
+    when mods.extents.empty?
+      if mods.digital_origin
+        xml.physicalDescription {
+          xml.digitalOrigin mods.digital_origin
+        }
+      end
+    else
       xml.physicalDescription {
         mods.extents.each do |extent|
           xml.extent extent
@@ -46,12 +52,6 @@ class MODSSerializer < ASpaceExport::Serializer
 
         xml.digitalOrigin mods.digital_origin if mods.digital_origin
       }
-    else
-      if mods.digital_origin
-        xml.physicalDescription {
-          xml.digitalOrigin mods.digital_origin
-        }
-      end
     end
 
     mods.notes.each do |note|
