@@ -49,7 +49,7 @@ class MODSSerializer < ASpaceExport::Serializer
     else
       if mods.digital_origin
         xml.physicalDescription {
-          xml.digitalOrigin mods.digital_oring
+          xml.digitalOrigin mods.digital_origin
         }
       end
     end
