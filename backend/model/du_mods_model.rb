@@ -71,7 +71,20 @@ class MODSModel < ASpaceExport::ExportModel
     mods = self.from_archival_object(obj)
 
     if obj.respond_to? :digital_object_type
-      mods.type_of_resource = obj.digital_object_type
+      case obj.digital_object_type
+      when 'moving_image'
+        mods.type_of_resource = "moving image"
+      when 'sound_recording'
+        mods.type_of_resource = "sound recording"
+      when 'sound_recording_musical'
+        mods.type_of_resource = "sound recording-musical"
+      when 'sound_recording_nonmusical'
+        mods.type_of_resource = "sound recording-nonmusical"
+      when 'still_image'
+        mods.type_of_resource = "still image"
+      when 'text'
+        mods.type_of_resource = "text"
+      end
     end
 
     mods.apply_map(obj, @digital_object_map, opts)

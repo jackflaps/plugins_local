@@ -37,14 +37,22 @@ class MODSSerializer < ASpaceExport::Serializer
       }
     }
 
-    xml.physicalDescription {
-      mods.extents.each do |extent|
-        xml.extent extent
-      end
+    case
+    when mods.extents
+      xml.physicalDescription {
+        mods.extents.each do |extent|
+          xml.extent extent
+        end
 
-      #digitalOrigin
-      xml.digitalOrigin mods.digital_origin if mods.digital_origin
-    }
+        xml.digitalOrigin mods.digital_origin if mods.digital_origin
+      }
+    else
+      if mods.digital_origin
+        xml.physicalDescription {
+          xml.digitalOrigin mods.digital_oring
+        }
+      end
+    end
 
     mods.notes.each do |note|
       if note.wrapping_tag
