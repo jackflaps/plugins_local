@@ -109,9 +109,9 @@ class MARCModel < ASpaceExport::ExportModel
     marc.controlfield_string = assemble_controlfield_string(obj)
 
     ## BEGIN local customization: obj.user_defined.string_1 == Alma MMS ID
-		if obj.has_key?('user_defined')
-			marc.local_controlfield_string = obj['user_defined']['string_1'] if obj['user_defined'].has_key?('string_1')
-		end
+    if obj.has_key?('user_defined')
+      marc.local_controlfield_string = obj['user_defined']['string_1'] if obj['user_defined'].has_key?('string_1')
+    end
     ## END
 
     ## BEGIN local customization: hard-coded RDA 33x field defaults
