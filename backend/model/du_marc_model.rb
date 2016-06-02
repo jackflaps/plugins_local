@@ -16,7 +16,7 @@ class MARCModel < ASpaceExport::ExportModel
     :linked_agents => :handle_agents,
     :subjects => :handle_subjects,
     :extents => :handle_extents,
-    :language => df_handler('lang', '041', '0', ' ', 'a'),
+    :language => :handle_language,
     :external_documents => :handle_documents,
     :dates => :handle_dates,
   }
@@ -26,12 +26,12 @@ class MARCModel < ASpaceExport::ExportModel
     :notes => :handle_notes,
     :finding_aid_description_rules => df_handler('fadr', '040', ' ', ' ', 'e'),
     :ead_location => :handle_ead_loc,
-    :user_defined => :handle_user_defined
+    :user_defined => :handle_user_defined # Local customization: export user-defined strings
   }
 
   attr_accessor :leader_string
   attr_accessor :controlfield_string
-  attr_accessor :local_controlfield_string
+  attr_accessor :local_controlfield_string # Local customization: create attribute for 001 field
 
   @@datafield = Class.new do
 
@@ -107,14 +107,18 @@ class MARCModel < ASpaceExport::ExportModel
     marc.leader_string[7] = obj.level == 'item' ? 'm' : 'c'
 
     marc.controlfield_string = assemble_controlfield_string(obj)
+
+    ## BEGIN local customization: obj.user_defined.string_1 == Alma MMS ID
 		if obj.has_key?('user_defined')
 			marc.local_controlfield_string = obj['user_defined']['string_1'] if obj['user_defined'].has_key?('string_1')
 		end
+    ## END
 
-    # RDA 33x field defaults
+    ## BEGIN local customization: hard-coded RDA 33x field defaults
     marc.df('336', ' ', ' ').with_sfs(['a', 'other'], ['b', 'xxx'], ['2', 'rdacontent'])
     marc.df('337', ' ', ' ').with_sfs(['a', 'unmediated'], ['b', 'n'], ['2', 'rdamedia'])
     marc.df('338', ' ', ' ').with_sfs(['a', 'other'], ['b', 'nz'], ['2', 'rdacarrier'])
+    ## END
 
     marc
   end
@@ -128,7 +132,7 @@ class MARCModel < ASpaceExport::ExportModel
     string += date['end'] ? date['end'][0..3] : "    "
     string += "xx"
     18.times { string += ' ' }
-    string += obj.language
+    string += (obj.language || '|||')
     string += ' d'
 
     string
@@ -155,11 +159,13 @@ class MARCModel < ASpaceExport::ExportModel
 
   def handle_id(*ids)
     ids.reject!{|i| i.nil? || i.empty?}
-    # add a local 'MS' indicator as the first 099|a
+
+    ## BEGIN local customization: add a local 'MS' indicator as the first 099|a
     df('099', ' ', '9').with_sfs(['a', 'MS'], ['a', ids.join('.')])
 	  df('852', ' ', ' ').with_sfs(['c', ids.join('.')])
+    ## END
 
-    # we handle the item record 949 here since it requires collection IDs
+    ## BEGIN local customization: handle the item record 949 here since it requires collection IDs
     df('949', ' ', '1').with_sfs(
       ['z', '099 9'],
       ['a', 'MS'],
@@ -172,12 +178,20 @@ class MARCModel < ASpaceExport::ExportModel
       ['t', '23'],
       ['u', 'SEND PATRON TO SPECIAL COLLECTIONS TO MAKE ARRANGEMENTS FOR USE']
     )
+    ## END
   end
 
 
   def handle_title(title)
     df('245', '1', '0').with_sfs(['a', title])
   end
+
+  def handle_language(langcode)
+    df('041', '0', ' ').with_sfs(['a', langcode])
+    df('040', '0', ' ').with_sfs(['b', langcode])
+    df('049', '0', ' ').with_sfs(['a', langcode])
+  end
+
 
   def handle_dates(dates)
     return false if dates.empty?
@@ -199,10 +213,11 @@ class MARCModel < ASpaceExport::ExportModel
 
       df('245', '1', '0').with_sfs([code, val])
 
-      # export the primary date as a 264, unless no date exists in ArchivesSpace
+      ## BEGIN local customization: don't export the date if it's not yet determined
       if code == 'f' && val != 'Date Not Yet Determined'
         df('264', ' ', '0').with_sfs(['c', val])
       end
+      ## END
     end
   end
 
@@ -213,8 +228,10 @@ class MARCModel < ASpaceExport::ExportModel
     sfa = repo['org_code'] ? repo['org_code'] : "Repository: #{repo['repo_code']}"
 
     df('852', ' ', ' ').with_sfs(['a', sfa], ['b', repo['name']])
-    # We use our OCLC code instead of our MARC code in the 040
+
+    ## BEGIN local customization: Use our OCLC code instead of our MARC code in the 040
     df('040', ' ', ' ').with_sfs(['a', 'DVP'], ['b', 'eng'], ['c', 'DVP'])
+    ## END
   end
 
   def source_to_code(source)
@@ -231,13 +248,14 @@ class MARCModel < ASpaceExport::ExportModel
                     when 'temporal'
                       ['648', source_to_code(subject['source'])]
 
-                    # part one of hack to export headings for buildings as 610s
+                    ## BEGIN local customization: A hack to export headings for buildings as 610s (pt. 1)
                     when 'topical'
                       if subject['source'] == 'built'
                         ['610', '7']
                       else
                         ['650', source_to_code(subject['source'])]
                       end
+                    ## END
                     when 'geographic', 'cultural_context'
                       ['651', source_to_code(subject['source'])]
                     when 'genre_form', 'style_period'
@@ -262,7 +280,7 @@ class MARCModel < ASpaceExport::ExportModel
         sfs << [tag, t['term']]
       end
 
-      # part two of hack to export headings for buildings as 610s
+      ## BEGIN local customization: A hack to export headings for buildings as 610s (pt. 2)
       if ind2 == '7'
         if subject['source'] == 'built'
           sfs << ['2', 'local']
@@ -270,6 +288,7 @@ class MARCModel < ASpaceExport::ExportModel
           sfs << ['2', subject['source']]
         end
       end
+      ## END
 
       df!(code, ' ', ind2).with_sfs(*sfs)
     end
@@ -392,12 +411,14 @@ class MARCModel < ASpaceExport::ExportModel
         sfs << [(tag), t['term']]
       end
 
-      # since we can't have ind2 = '7' right now I have to comment this out
+      ## BEGIN local customization: since we can't have ind2 = '7' right now I have to comment this out
 
       #if ind2 == '7'
       #  sfs << ['2', subject['source']]
       #end
+
       sfs << ['2', subject['source']]
+      ## END
 
       df(code, ind1, ind2, i).with_sfs(*sfs)
     end
@@ -542,19 +563,22 @@ class MARCModel < ASpaceExport::ExportModel
       e = ext['number']
       e << " #{I18n.t('enumerations.extent_extent_type.'+ext['extent_type'], :default => ext['extent_type'])}"
 
-      # export dimensions into 300|c subfield
+      if ext['container_summary']
+        e << " (#{ext['container_summary']})"
+      end
 
+      ## BEGIN local customization: export dimensions into 300|c subfield
       if ext['dimensions']
         d = ext['dimensions']
       end
 
       df!('300').with_sfs(['a', e], ['c', d])
+      ## END
     end
   end
 
 
-  # external_documents handler for links to Sierra, Islandora, OCLC
-
+  ## BEGIN local customization: external_documents handler for Islandora links
   def handle_documents(documents)
     documents.each do |doc|
       case doc['title']
@@ -568,16 +592,20 @@ class MARCModel < ASpaceExport::ExportModel
       end
     end
   end
+  ## END
 
 
   def handle_ead_loc(ead_loc)
-    # don't export a finding aid location if none exists for the collection
+    ## BEGIN local customization: don't export a finding aid location if none exists
     return false unless ead_loc
+    ## END
     df('555', ' ', ' ').with_sfs(['a', "Finding aid online:"], ['u', ead_loc])
     df('856', '4', '2').with_sfs(['z', "Finding aid online:"], ['u', ead_loc])
   end
 
-  # handle user-defined strings such as local bib number and OCLC number
+  ## BEGIN local customization: handle user-defined strings as such:
+  # obj.user_defined.string_2 = Sierra .b number
+  # obj.user_defined.string_3 = OCLC number
   def handle_user_defined(user_defined)
     return false unless user_defined
     if user_defined.has_key?('string_2')
@@ -595,5 +623,6 @@ class MARCModel < ASpaceExport::ExportModel
       df('035', ' ', ' ').with_sfs(['a', text])
     end
   end
+  ## END
 
 end
