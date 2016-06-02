@@ -46,9 +46,11 @@ class MARCSerializer < ASpaceExport::Serializer
          xml.text marc.leader_string
         }
 
+        ## BEGIN local customization: add Alma MMS ID to controlfield 001 (for matching on Alma import)
         xml.controlfield(:tag => '001') {
           xml.text marc.local_controlfield_string
         } unless marc.local_controlfield_string.nil?
+        ## END
 
         xml.controlfield(:tag => '008') {
          xml.text marc.controlfield_string
