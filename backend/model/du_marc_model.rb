@@ -162,23 +162,8 @@ class MARCModel < ASpaceExport::ExportModel
 
     ## BEGIN local customization: add a local 'MS' indicator as the first 099|a
     df('099', ' ', '9').with_sfs(['a', 'MS'], ['a', ids.join('.')])
-	  df('852', ' ', ' ').with_sfs(['c', ids.join('.')])
     ## END
 
-    ## BEGIN local customization: handle the item record 949 here since it requires collection IDs
-    df('949', ' ', '1').with_sfs(
-      ['z', '099 9'],
-      ['a', 'MS'],
-      ['a', ids.join('.')],
-      ['c', 'Box 1'],
-      ['l', 'hscol'], # assumes location is Hampden Center; change accordingly
-      ['o', 'z'], # OPACMSG = BULK LOAD
-      ['r', '-'],
-      ['s', 'v'],
-      ['t', '23'],
-      ['u', 'SEND PATRON TO SPECIAL COLLECTIONS TO MAKE ARRANGEMENTS FOR USE']
-    )
-    ## END
   end
 
 
@@ -227,9 +212,10 @@ class MARCModel < ASpaceExport::ExportModel
 
     sfa = repo['org_code'] ? repo['org_code'] : "Repository: #{repo['repo_code']}"
 
-    df('852', ' ', ' ').with_sfs(['a', sfa], ['b', repo['name']])
-
-    ## BEGIN local customization: Use our OCLC code instead of our MARC code in the 040
+    ## BEGIN local customizations:
+    # * drop repo name from 852|b
+    # * use our OCLC code instead of our MARC code in the 040
+    df('852', '4', '1').with_sfs(['a', sfa])
     df('040', ' ', ' ').with_sfs(['a', 'DVP'], ['b', 'eng'], ['c', 'DVP'])
     ## END
   end
