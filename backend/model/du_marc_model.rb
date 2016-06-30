@@ -160,8 +160,8 @@ class MARCModel < ASpaceExport::ExportModel
   def handle_id(*ids)
     ids.reject!{|i| i.nil? || i.empty?}
 
-    ## BEGIN local customization: add a local 'MS' indicator as the first 099|a
-    df('099', ' ', '9').with_sfs(['a', 'MS'], ['a', ids.join('.')])
+    ## BEGIN local customization: local formatting of MS call numbers
+    df('099', ' ', '9').with_sfs(['a', "MS #{ids.join('.')}"])
     ## END
 
   end
@@ -397,14 +397,9 @@ class MARCModel < ASpaceExport::ExportModel
         sfs << [(tag), t['term']]
       end
 
-      ## BEGIN local customization: since we can't have ind2 = '7' right now I have to comment this out
-
-      #if ind2 == '7'
-      #  sfs << ['2', subject['source']]
-      #end
-
-      sfs << ['2', subject['source']]
-      ## END
+      if ind2 == '7'
+        sfs << ['2', subject['source']]
+      end
 
       df(code, ind1, ind2, i).with_sfs(*sfs)
     end
@@ -413,7 +408,7 @@ class MARCModel < ASpaceExport::ExportModel
     creators = linked_agents.select{|a| a['role'] == 'creator'}[1..-1] || []
     creators = creators + linked_agents.select{|a| a['role'] == 'source'}
 
-    # this fixes a bug where when it was just creators.each, all 7xx fields of one agent type exported into a single datafield
+    # this fixes a bug where all 7xx fields of a single agent type exported into one datafield
     creators.each_with_index do |link, i|
       creator = link['_resolved']
       name = creator['display_name']
