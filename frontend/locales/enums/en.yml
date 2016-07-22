@@ -15,6 +15,7 @@ en:
     subject_source:
       built: Local Built Environment Vocabulary
       lcgft: "Library Of Congress Genre/Form Terms"
+      lcnaf: Library of Congress Name Authority File
       prov: Provisionally Established Entry
       tucua: Thesaurus for Use in College and University Archives
       viaf: Virtual International Authority File
