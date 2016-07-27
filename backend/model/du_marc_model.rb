@@ -587,15 +587,6 @@ class MARCModel < ASpaceExport::ExportModel
   # obj.user_defined.string_3 = OCLC number
   def handle_user_defined(user_defined)
     return false unless user_defined
-    #if user_defined.has_key?('string_2')
-    #  if user_defined['string_2'].start_with?('.')
-    #    text = "#{user_defined['string_2'].sub(/^\./,'')}"
-    #  else
-    #    text = "#{user_defined['string_2']}"
-    #  end
-    #  df('907', ' ', ' ').with_sfs(['a', text])
-    #end
-
     if user_defined.has_key?('string_3')
       text = "(OCoLC)"
       text += user_defined['string_3'].delete("http://worldcat.org/oclc/")
