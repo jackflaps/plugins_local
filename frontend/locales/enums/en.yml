@@ -20,11 +20,10 @@ en:
       tucua: Thesaurus for Use in College and University Archives
       viaf: Virtual International Authority File
     user_defined_enum_1:
-      complete: Complete
-      minimal: Minimal
-      new: New
-      oclc_complete: OCLC Complete
-      on_sar: Subject Access Review
+      cancelled: Cancelled
+      level_1: Level 1
+      level_2: Level 2
+      level_3: Level 3
     user_defined_enum_2:
       born_digital: Born Digital
       digitized_micro: Digitized Microfilm
@@ -32,5 +31,5 @@ en:
       reformatted: Reformatted Digital
 
   enumeration_names:
-    user_defined_enum_1: Resource Cataloging Record Status
+    user_defined_enum_1: Resource Processing Level 
     user_defined_enum_2: Digital Object MODS Digital Origin
