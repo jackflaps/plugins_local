@@ -9,6 +9,10 @@ en:
     date_label:
       acquisition: Acquisition
       record_keeping: Record Keeping
+    location_temporary:
+      digitization: Digitization
+      processing_mds: "Processing (Metadata and Digitization Services)"
+      processing_sca: "Processing (Special Collections and Archives)"
     name_source:
       prov: Provisionally Established Name Entry
       viaf: Virtual International Authority File
@@ -32,5 +36,5 @@ en:
       reformatted: Reformatted Digital
 
   enumeration_names:
-    user_defined_enum_1: Resource Processing Level 
+    user_defined_enum_1: Resource Processing Level
     user_defined_enum_2: Digital Object MODS Digital Origin
