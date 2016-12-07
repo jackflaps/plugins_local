@@ -11,6 +11,7 @@ en:
       record_keeping: Record Keeping
     location_temporary:
       digitization: Digitization
+      holding: Holding
       processing_mds: "Processing (Metadata and Digitization Services)"
       processing_sca: "Processing (Special Collections and Archives)"
     name_source:
