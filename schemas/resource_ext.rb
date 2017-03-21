@@ -1,1 +1,1 @@
-{ "id_0" => { "pattern" => "\\A[BDMU]\\d{3}\\z" } }
+{ "id_0" => { "pattern" => "\\A[BDMTU]\\d{3}\\z" } }
