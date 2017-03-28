@@ -8,6 +8,7 @@ en:
       processing_in_progress: Processing In Progress
     date_label:
       acquisition: Acquisition
+      coverage: Coverage
       record_keeping: Record Keeping
     location_temporary:
       digitization: Digitization
