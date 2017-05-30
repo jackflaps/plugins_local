@@ -5,6 +5,8 @@ en:
       donor: Donor
     event_event_type:
       condition_report: Condition Report
+      exhibit: Exhibit
+      loan: Loan
       processing_in_progress: Processing In Progress
     date_label:
       acquisition: Acquisition
