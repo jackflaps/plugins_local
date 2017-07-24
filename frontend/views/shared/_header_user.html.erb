@@ -30,6 +30,7 @@
           <li><%= link_to I18n.t("navbar.system_info"), :controller => :system_info, :action => :show %></li>
         <% end %>
       <% end %>
+      <!-- only display "manage_container_profiles" if the user can manage container profiles -->
       <% if user_can?('manage_container_profile_record') %>
         <li><%= link_to I18n.t("navbar.manage_container_profiles"), :controller => :container_profiles, :action => :index %></li>
       <% end %>
