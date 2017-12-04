@@ -25,7 +25,7 @@ class MARCModel < ASpaceExport::ExportModel
     [:id_0, :id_1, :id_2, :id_3] => :handle_id,
     :notes => :handle_notes,
     :finding_aid_description_rules => df_handler('fadr', '040', ' ', ' ', 'e'),
-    :ead_location => :handle_ead_loc,
+    :uri => :handle_url,
     :user_defined => :handle_user_defined # Local customization: export user-defined strings
   }
 
@@ -108,7 +108,7 @@ class MARCModel < ASpaceExport::ExportModel
 
     marc.controlfield_string = assemble_controlfield_string(obj)
 
-    ## BEGIN local customization: obj.user_defined.string_1 == Alma MMS ID
+    ## BEGIN local customization: obj.user_defined.string_2 == Alma MMS ID
     if obj.has_key?('user_defined')
       marc.local_controlfield_string = obj['user_defined']['string_2'] if obj['user_defined'].has_key?('string_2')
     end
@@ -172,6 +172,7 @@ class MARCModel < ASpaceExport::ExportModel
   end
 
   def handle_language(langcode)
+    return false unless langcode
     df('041', '0', ' ').with_sfs(['a', langcode])
   end
 
@@ -257,7 +258,7 @@ class MARCModel < ASpaceExport::ExportModel
         tag = case t['term_type']
               when 'uniform_title'; 't'
               when 'genre_form', 'style_period'; 'v'
-              when 'topical', 'cultural_context'; 'x'
+              when 'topical', 'cultural_context', 'occupation'; 'x'
               when 'temporal'; 'y'
               when 'geographic'; 'z'
               end
@@ -333,7 +334,6 @@ class MARCModel < ASpaceExport::ExportModel
 
 
   def handle_agents(linked_agents)
-
     handle_primary_creator(linked_agents)
 
     subjects = linked_agents.select{|a| a['role'] == 'subject'}
@@ -388,7 +388,7 @@ class MARCModel < ASpaceExport::ExportModel
         tag = case t['term_type']
           when 'uniform_title'; 't'
           when 'genre_form', 'style_period'; 'v'
-          when 'topical', 'cultural_context'; 'x'
+          when 'topical', 'cultural_context', 'occupation'; 'x'
           when 'temporal'; 'y'
           when 'geographic'; 'z'
           end
@@ -471,68 +471,66 @@ class MARCModel < ASpaceExport::ExportModel
 
 
   def handle_notes(notes)
-
     notes.each do |note|
-
-      prefix =  case note['type']
-                when 'dimensions'; "Dimensions"
-                when 'physdesc'; "Physical Description note"
-                when 'materialspec'; "Material Specific Details"
-                when 'physloc'; "Location of resource"
-                when 'phystech'; "Physical Characteristics / Technical Requirements"
-                when 'physfacet'; "Physical Facet"
-                when 'processinfo'; "Processing Information"
-                when 'separatedmaterial'; "Materials Separated from the Resource"
-                else; nil
-                end
-
-      marc_args = case note['type']
-
-                  when 'arrangement', 'fileplan'
-                    ['351','b']
-                  when 'odd', 'dimensions', 'physdesc', 'materialspec', 'physloc', 'phystech', 'physfacet', 'processinfo', 'separatedmaterial'
-                    ['500','a']
-                  when 'accessrestrict'
-                    ['506','a']
-                  when 'scopecontent'
-                    ['520', '2', ' ', 'a']
-                  when 'abstract'
-                    ['520', '3', ' ', 'a']
-                  when 'prefercite'
-                    ['524', '8', ' ', 'a']
-                  when 'acqinfo'
-                    ind1 = note['publish'] ? '1' : '0'
-                    ['541', ind1, ' ', 'a']
-                  when 'relatedmaterial'
-                    ['544','a']
-                  when 'bioghist'
-                    ['545','a']
-                  when 'custodhist'
-                    ind1 = note['publish'] ? '1' : '0'
-                    ['561', ind1, ' ', 'a']
-                  when 'appraisal'
-                    ind1 = note['publish'] ? '1' : '0'
-                    ['583', ind1, ' ', 'a']
-                  when 'accruals'
-                    ['584', 'a']
-                  when 'altformavail'
-                    ['535', '2', ' ', 'a']
-                  when 'originalsloc'
-                    ['535', '1', ' ', 'a']
-                  when 'userestrict', 'legalstatus'
-                    ['540', 'a']
-                  when 'langmaterial'
-                    ['546', 'a']
-                  else
-                    nil
+      if note['publish']
+        prefix =  case note['type']
+                  when 'dimensions'; "Dimensions"
+                  when 'physdesc'; "Physical Description note"
+                  when 'materialspec'; "Material Specific Details"
+                  when 'physloc'; "Location of resource"
+                  when 'phystech'; "Physical Characteristics / Technical Requirements"
+                  when 'physfacet'; "Physical Facet"
+                  when 'processinfo'; "Processing Information"
+                  when 'separatedmaterial'; "Materials Separated from the Resource"
+                  else; nil
                   end
 
-      unless marc_args.nil?
-        text = prefix ? "#{prefix}: " : ""
-        text += ASpaceExport::Utils.extract_note_text(note)
-        df!(*marc_args[0...-1]).with_sfs([marc_args.last, *Array(text)])
-      end
+        marc_args = case note['type']
+                    when 'arrangement', 'fileplan'
+                      ['351','b']
+                    when 'odd', 'dimensions', 'physdesc', 'materialspec', 'physloc', 'phystech', 'physfacet', 'processinfo', 'separatedmaterial'
+                      ['500','a']
+                    when 'accessrestrict'
+                      ['506','a']
+                    when 'scopecontent'
+                      ['520', '2', ' ', 'a']
+                    when 'abstract'
+                      ['520', '3', ' ', 'a']
+                    when 'prefercite'
+                      ['524', '8', ' ', 'a']
+                    when 'acqinfo'
+                      ind1 = note['publish'] ? '1' : '0'
+                      ['541', ind1, ' ', 'a']
+                    when 'relatedmaterial'
+                      ['544','a']
+                    when 'bioghist'
+                      ['545','a']
+                    when 'custodhist'
+                      ind1 = note['publish'] ? '1' : '0'
+                      ['561', ind1, ' ', 'a']
+                    when 'appraisal'
+                      ind1 = note['publish'] ? '1' : '0'
+                      ['583', ind1, ' ', 'a']
+                    when 'accruals'
+                      ['584', 'a']
+                    when 'altformavail'
+                      ['535', '2', ' ', 'a']
+                    when 'originalsloc'
+                      ['535', '1', ' ', 'a']
+                    when 'userestrict', 'legalstatus'
+                      ['540', 'a']
+                    when 'langmaterial'
+                      ['546', 'a']
+                    else
+                      nil
+                    end
 
+        unless marc_args.nil?
+          text = prefix ? "#{prefix}: " : ""
+          text += ASpaceExport::Utils.extract_note_text(note)
+          df!(*marc_args[0...-1]).with_sfs([marc_args.last, *Array(text)]) unless text.empty?
+        end
+      end
     end
   end
 
@@ -574,16 +572,15 @@ class MARCModel < ASpaceExport::ExportModel
   ## END
 
 
-  def handle_ead_loc(ead_loc)
-    ## BEGIN local customization: don't export a finding aid location if none exists
-    return false unless ead_loc
-    ## END
-    df('555', ' ', ' ').with_sfs(['a', "Finding aid online:"], ['u', ead_loc])
-    df('856', '4', '2').with_sfs(['z', "Finding aid online:"], ['u', ead_loc])
+  def handle_url(uri)
+    text =
+    df('856', '4', '2').with_sfs(
+      ['z', "Finding aid available"],
+      ['u', "https://duarchives.coalliance.org#{uri}"]
+    )
   end
 
   ## BEGIN local customization: handle user-defined strings as such:
-  # obj.user_defined.string_2 = Sierra .b number
   # obj.user_defined.string_3 = OCLC number
   def handle_user_defined(user_defined)
     return false unless user_defined
