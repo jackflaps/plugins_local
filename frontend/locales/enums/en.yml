@@ -1,5 +1,8 @@
 en:
   enumerations:
+    container_type:
+      crate: Crate
+      drawer: Map Drawer
     linked_agent_event_roles:
       donee: Donee
       donor: Donor
