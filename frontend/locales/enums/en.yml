@@ -10,6 +10,7 @@ en:
       condition_report: Condition Report
       exhibit: Exhibit
       loan: Loan
+      missing: Materials Missing
       processing_in_progress: Processing In Progress
     date_label:
       acquisition: Acquisition
