@@ -12,6 +12,9 @@ en:
       loan: Loan
       missing: Materials Missing
       processing_in_progress: Processing In Progress
+    event_outcome_type:
+      active: Active
+      returned: Returned
     date_label:
       acquisition: Acquisition
       coverage: Coverage
