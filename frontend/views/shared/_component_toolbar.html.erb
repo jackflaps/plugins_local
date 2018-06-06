@@ -50,8 +50,8 @@
                   <% if lookup_context.find_all('ao_mods/_toolbar_button').any? %>
                     <li><%= render_aspace_partial :partial => "ao_mods/toolbar_button", :locals => {:record => record, :parent_link => parent_link} %></li>
                   <% end %>
-                  <% if lookup_context.find_all('item_linker/_toolbar_button').any? %>
-                    <li><%= render_aspace_partial :partial => "item_linker/toolbar_button", :locals => {:record => record, :parent_link => parent_link} %></li>
+                  <% if lookup_context.find_all('digitizer/_toolbar_button').any? %>
+                    <li><%= render_aspace_partial :partial => "digitizer/toolbar_button", :locals => {:record => record, :parent_link => parent_link} %></li>
                   <% end %>
                 <% end %>
                 <%# end plugin %>
