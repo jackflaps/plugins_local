@@ -4,7 +4,7 @@
    @show_multiselect_column = user_can?("delete_subject_record")
    title_column_header(I18n.t("subject.terms"))
    # add column 'Term Type' to display
-   add_column("Term Type", proc {|record| I18n.t("enumerations.subject_term_type.#{record['first_term_type']}")}, :sortable => true, :sort_by => "term_type")
+   add_column("Term Type (First)", proc {|record| I18n.t("enumerations.subject_term_type.#{record['first_term_type']}")})
 %>
 
 <div class="row">
@@ -20,7 +20,7 @@
           <% if user_can?('manage_repository') %>
               <%= link_to I18n.t("actions.edit_default_values"), {:controller => :subjects, :action => :defaults}, :class => "btn btn-sm btn-default" %>
           <% end %>
-          <%= link_to I18n.t("actions.export_csv"), request.parameters.merge({ :format => :csv}), id: "searchExport", class: "btn btn-sm btn-info" %>
+          <%= link_to I18n.t("actions.export_csv"), request.parameters.merge({:format => :csv}), id: "searchExport", class: "btn btn-sm btn-info" %>
           <%= link_to I18n.t("subject._frontend.action.create"), {:controller => :subjects, :action => :new}, :class => "btn btn-sm btn-default" %>
           <% if user_can?('delete_subject_record') %>
             <%= button_delete_multiple_action(:subjects) %>
