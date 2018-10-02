@@ -22,13 +22,15 @@ en:
     location_temporary:
       digitization: Digitization
       holding: Holding
-      processing_mds: "Processing (Metadata and Digitization Services)"
+      processing_mds: "Processing (Digital Collections Services)"
       processing_sca: "Processing (Special Collections and Archives)"
     name_source:
+      lcsh: Library of Congress Subject Headings
       prov: Provisionally Established Name Entry
       viaf: Virtual International Authority File
     subject_source:
       built: Local Built Environment Vocabulary
+      gn: GeoNames
       issn: International Standard Serial Number
       lcgft: "Library Of Congress Genre/Form Terms"
       lcnaf: Library of Congress Name Authority File
