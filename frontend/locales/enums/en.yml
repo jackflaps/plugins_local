@@ -39,6 +39,10 @@ en:
       tgm: Thesaurus for Graphic Materials
       tucua: Thesaurus for Use in College and University Archives
       viaf: Virtual International Authority File
+    file_version_file_format_name:
+      mp4: MPEG-4 Part 14
+      mov: QuickTime File Format
+      wav: Waveform Audio File Format
     user_defined_enum_1:
       cancelled: Cancelled
       level_0: Level 0
