@@ -54,7 +54,14 @@ en:
       digitized_micro: Digitized Microfilm
       digitized_other: Digitized Other Analog
       reformatted: Reformatted Digital
+    user_defined_enum_3:
+      deed_of_gift: Deed of Gift Received
+      no_record: No Record
+      other_docs: Other Documents
+      univ_property: University Property
+      unknown: Unknown
 
   enumeration_names:
     user_defined_enum_1: Resource Processing Level
     user_defined_enum_2: Digital Object MODS Digital Origin
+    user_defined_enum_3: Accession Title Status
