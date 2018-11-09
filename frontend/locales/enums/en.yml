@@ -15,6 +15,11 @@ en:
     event_outcome_type:
       active: Active
       returned: Returned
+    extent_extent_type:
+      items: Items
+      photographic_negatives: Photographic Negatives
+      photographic_prints: Photographic Prints
+      photographic_slides: Photographic Slides
     date_label:
       acquisition: Acquisition
       coverage: Coverage
@@ -55,9 +60,14 @@ en:
       digitized_other: Digitized Other Analog
       reformatted: Reformatted Digital
     user_defined_enum_3:
+      deed: Deed of Gift Received
       deed_of_gift: Deed of Gift Received
+      deed_of_gift_pending: Deed of Gift Pending
+      deed_pending: Deed of Gift Pending
+      monetary_gift: Monetary Gift
       no_record: No Record
       other_docs: Other Documents
+      transfer: Transfer
       univ_property: University Property
       unknown: Unknown
 
