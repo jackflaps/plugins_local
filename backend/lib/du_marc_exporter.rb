@@ -1,13 +1,11 @@
+# Our custom MARC exporter, used to ensure MMS IDs export in controlfield 001
+
 class MARCSerializer < ASpaceExport::Serializer
   serializer_for :marc21
 
   def build(marc, opts = {})
-
     builder = Nokogiri::XML::Builder.new(:encoding => "UTF-8") do |xml|
       _root(marc, xml)
-
-      ns = xml.doc.root.add_namespace_definition('marc', 'http://www.loc.gov/MARC21/slim')
-      xml.doc.root.namespace = ns
     end
 
     builder
@@ -28,7 +26,6 @@ class MARCSerializer < ASpaceExport::Serializer
 
 
   def serialize(marc, opts = {})
-
     builder = build(MARCSerializer.decorate_record(marc), opts)
 
     builder.to_xml
@@ -42,7 +39,7 @@ class MARCSerializer < ASpaceExport::Serializer
     xml.collection('xmlns'              => 'http://www.loc.gov/MARC21/slim',
                    'xmlns:marc'         => 'http://www.loc.gov/MARC21/slim',
                    'xmlns:xsi'          => 'http://www.w3.org/2001/XMLSchema-instance',
-                   'xsi:schemaLocation' => 'http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd'){
+                   'xsi:schemaLocation' => 'http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd http://www.loc.gov/MARC21/slim'){
 
       xml.record {
 
@@ -50,17 +47,17 @@ class MARCSerializer < ASpaceExport::Serializer
          xml.text marc.leader_string
         }
 
-        ## BEGIN local customization: add Alma MMS ID to controlfield 001 (for matching on Alma import)
-        xml.controlfield(:tag => '001') {
-          xml.text marc.local_controlfield_string
-        } unless marc.local_controlfield_string.nil?
-        ## END
+        marc.controlfields.each do |cf|
+          xml.controlfield(:tag => cf[:tag]) { xml.text cf[:text] }
+        end
 
         xml.controlfield(:tag => '008') {
          xml.text marc.controlfield_string
         }
 
-        marc.datafields.each do |df|
+        sorted_datafields = marc.datafields.sort {|a, b| a.tag <=> b.tag}
+
+        sorted_datafields.each do |df|
 
           df.ind1 = ' ' if df.ind1.nil?
           df.ind2 = ' ' if df.ind2.nil?
