@@ -33,6 +33,8 @@ en:
       lcsh: Library of Congress Subject Headings
       prov: Provisionally Established Name Entry
       viaf: Virtual International Authority File
+    accession_acquisition_type:
+      loan: Loan
     subject_source:
       built: Local Built Environment Vocabulary
       gn: GeoNames
@@ -47,6 +49,7 @@ en:
     file_version_file_format_name:
       mp4: MPEG-4 Part 14
       mov: QuickTime File Format
+      png: Portable Network Graphics
       wav: Waveform Audio File Format
     user_defined_enum_1:
       cancelled: Cancelled
