@@ -62,9 +62,9 @@ class DenverMARCSerializer
 
     # hard-coded RDA 33X defaults
     # (to one day customize based on indicated form/genre, but we're copping out for now)
-    fields << DataField.new('336', ' ', ' ').with_sfs(['a', 'other'], ['b', 'xxx'], ['2', 'rdacontent'])
+    fields << DataField.new('336', ' ', ' ').with_sfs(['a', 'unspecified'], ['b', 'zzz'], ['2', 'rdacontent'])
     fields << DataField.new('337', ' ', ' ').with_sfs(['a', 'unmediated'], ['b', 'n'], ['2', 'rdamedia'])
-    fields << DataField.new('338', ' ', ' ').with_sfs(['a', 'other'], ['b', 'nz'], ['2', 'rdacarrier'])
+    fields << DataField.new('338', ' ', ' ').with_sfs(['a', 'unspecified'], ['b', 'zu'], ['2', 'rdacarrier'])
 
     # this is so gross but this is how we add 856 datafields for the repository
     if @record.aspace_record.has_key?('external_documents')
