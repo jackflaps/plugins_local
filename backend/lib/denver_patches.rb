@@ -36,12 +36,6 @@ class MARCModel < ASpaceExport::ExportModel
     df('099', ' ', ' ').with_sfs(['a', "MS #{ids.join('.')}"])
   end
 
-  # no 041 if no language provided
-  def handle_language(langcode)
-    return false unless langcode
-    df('041', '0', '7').with_sfs(['a', langcode], ['2', 'iso639-2b'])
-  end
-
   # if subject['source'] == 'built' export as 610
   # TODO: fix 610$2 == "local" if the real source is Library of Congress (inferred from authority_id)
   def handle_subjects(subjects)
