@@ -8,14 +8,21 @@ class MARCModel < ASpaceExport::ExportModel
   attr_reader :aspace_record
   attr_accessor :controlfields
 
-  # wondering if I can put finding_aid_description_rules here...
+  # include finding_aid_description_rules in @archival_object_map so we can
+  # order the 040 subfields according to OCLC specifications
   @archival_object_map = {
-    [:repository, :finding_aid_language, :finding_aid_description_rules] => :handle_repo_code
+    [:repository, :finding_aid_language, :finding_aid_description_rules] => :handle_repo_code,
+    [:title, :linked_agents, :dates] => :handle_title,
+    :linked_agents => :handle_agents,
+    :subjects => :handle_subjects,
+    :extents => :handle_extents,
+    :lang_materials => :handle_languages
   }
 
   # we don't use the ead_loc method because we use the PUI for "finding aids"
   @resource_map = {
     [:id_0, :id_1, :id_2, :id_3] => :handle_id,
+    [:id, :jsonmodel_type] => :handle_ark,
     :notes => :handle_notes
   }
 
