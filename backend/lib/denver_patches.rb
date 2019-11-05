@@ -8,11 +8,22 @@ class MARCModel < ASpaceExport::ExportModel
   attr_reader :aspace_record
   attr_accessor :controlfields
 
+  # include finding_aid_description_rules in @archival_object_map so we can
+  # order the 040 subfields according to OCLC specifications
+  @archival_object_map = {
+    [:repository, :finding_aid_language, :finding_aid_description_rules] => :handle_repo_code,
+    [:title, :linked_agents, :dates] => :handle_title,
+    :linked_agents => :handle_agents,
+    :subjects => :handle_subjects,
+    :extents => :handle_extents,
+    :lang_materials => :handle_languages
+  }
+
   # we don't use the ead_loc method because we use the PUI for "finding aids"
   @resource_map = {
     [:id_0, :id_1, :id_2, :id_3] => :handle_id,
-    :notes => :handle_notes,
-    :finding_aid_description_rules => df_handler('fadr', '040', ' ', ' ', 'e')
+    [:id, :jsonmodel_type] => :handle_ark,
+    :notes => :handle_notes
   }
 
   def initialize(obj, opts = {include_unpublished: false})
@@ -30,16 +41,51 @@ class MARCModel < ASpaceExport::ExportModel
     self.new(obj, opts)
   end
 
+  def handle_repo_code(repository, *finding_aid_language, finding_aid_description_rules)
+    repo = repository['_resolved']
+    return false unless repo
+
+    sfa = repo['org_code'] ? repo['org_code'] : "Repository: #{repo['repo_code']}"
+
+    # ANW-529: options for 852 datafield:
+    # 1.) $a => org_code || repo_name
+    # 2.) $a => $parent_institution_name && $b => repo_name
+
+    if repo['parent_institution_name']
+      subfields_852 = [
+                        ['a', repo['parent_institution_name']],
+                        ['b', repo['name']]
+                      ]
+    elsif repo['org_code']
+      subfields_852 = [
+                        ['a', repo['org_code']],
+                      ]
+    else
+      subfields_852 = [
+                        ['a', repo['name']]
+                      ]
+    end
+
+    df('852', ' ', ' ').with_sfs(*subfields_852)
+    df('040', ' ', ' ').with_sfs(['a', repo['org_code']], ['b', finding_aid_language[0]], ['e', finding_aid_description_rules], ['c', repo['org_code']])
+    df('049', ' ', ' ').with_sfs(['a', repo['org_code']])
+
+    if repo.has_key?('country') && !repo['country'].empty?
+
+      # US is a special case, because ASpace has no knowledge of states, the
+      # correct value is 'xxu'
+      if repo['country'] == "US"
+        df('044', ' ', ' ').with_sfs(['a', "xxu"])
+      else
+        df('044', ' ', ' ').with_sfs(['a', repo['country'].downcase])
+      end
+    end
+  end
+
   # prefix 099$a with "MS" per local style guidelines
   def handle_id(*ids)
     ids.reject!{|i| i.nil? || i.empty? }
     df('099', ' ', ' ').with_sfs(['a', "MS #{ids.join('.')}"])
-  end
-
-  # no 041 if no language provided
-  def handle_language(langcode)
-    return false unless langcode
-    df('041', '0', '7').with_sfs(['a', langcode], ['2', 'iso639-2b'])
   end
 
   # if subject['source'] == 'built' export as 610

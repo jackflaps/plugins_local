@@ -1,10 +1,26 @@
-# plugins/local
+# Local
 
-These are general local customizations for the ArchivesSpace instance at Special Collections and Archives at the University Libraries, University of Denver. They do three things:
+We use local plugins to customize the look and feel of the University of Denver ArchivesSpace staff interface, and to provide validations for data properties above and beyond what ArchivesSpace provides by default.
 
-1. Branding
-2. Extend the resource_tree content model to display the component IDs in the third column, for easier tree navigation for our archivists
-3. Add rows to the component toolbar for Archival Objects to allow for MODS export and linking to digital objects, provided the [ao_mods](https://github.com/duspeccoll/ao_mods) and [item_linker](https://github.com/duspeccoll/item_linker) plugins are active
-4. Custom MARC export options (with many thanks to the work done at [NYU](https://github.com/NYULibraries/nyu_marcxml_export_plugin) and [Dartmouth](https://github.com/hudmol/dartmouth_udf_exports) for leading the way)
+In each section of the code, changes made by the plugins are commented with descriptions of what each change sets out to do.
 
-Customizations to the public user interface (PUI) may be found in a separate plugin documented [here](https://github.com/duspeccoll/denver_pui).
+## Backend customizations
+
+The backend customizations override the default MARC export for Resources, to make local customizations to leader and control fields; to provide 33X data fields for RDA content, media, and carrier types; and to include data properties of import to the local catalog, such as OCLC numbers in the 035 data field, and links to [the Archives @ DU Catalog](https://duarchives.coalliance.org) and to [our digital repository](https://specialcollections.du.edu) where appropriate.
+
+## Frontend customizations
+
+* Labels for user-defined and other fields used locally, such as Kaltura IDs for digital object components
+* Staff interface look and feel customizations, such as the DU logo
+* Changes to the toolbar for integration with other plugins
+* Extending the resource tree in order to display archival object component IDs in the third column, for ease of navigation when processing
+
+## Schema extensions
+
+* **archival_object_ext.rb** makes the component ID required at the Archival Object level
+* **digital_object_component_ext.rb** validates the optional Component ID field against the Kaltura Entry ID specifications: `/[0-9]_[0-9a-z]{8}/`
+* **resource_ext.rb** validates the call number against DU collection identifier guidelines: `/[BDMPTU]\d{3}/`
+
+## Related work
+
+Customizations to the [Archives @ DU Catalog](https://duarchives.coalliance.org), our implementation of the ArchivesSpace public user interface, are found [here](https://github.com/duspeccoll/denver_pui).
