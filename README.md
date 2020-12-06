@@ -7,6 +7,11 @@ In each section of the code, changes made by the plugins are commented with desc
 ## How to install
 Add to /plugins, change to local instead of plugins_local
 
+## Changelog
+
+* 2020-12-06 - remove subjects and assessments view, no longer working or needed for 2.8.1 with repository customizations, cleanup directories
+* 2020-09-01 - add level 1.5 customization for enums 1 locale
+
 ## Backend customizations
 
 The backend customizations override the default MARC export for Resources, to make local customizations to leader and control fields; to provide 33X data fields for RDA content, media, and carrier types; and to include data properties of import to the local catalog, such as OCLC numbers in the 035 data field, and links to [the Archives @ DU Catalog](https://duarchives.coalliance.org) and to [our digital repository](https://specialcollections.du.edu) where appropriate.
