@@ -28,61 +28,117 @@ The backend customizations override the default MARC export for Resources, to ma
 
 To do customizations in 2.7.0 and beyond, a local plugins directory looks like this:
 .
+
 ├── README.md
+
 ├── backend
+
 │   ├── README.md
+
 │   ├── controllers
+
 │   │   └── README.md
+
 │   ├── lib
+
 │   │   ├── README.md
+
 │   │   ├── denver_marc_serializer.rb
+
 │   │   ├── denver_patches.rb
+
 │   │   └── du_marc_exporter.rb
+
 │   ├── model
+
 │   │   ├── mixins
+
 │   │   │   └── README.md
+
 │   │   └── reports
+
 │   │       └── README.md
+
 │   └── plugin_init.rb
+
 ├── frontend
+
 │   ├── assets
+
 │   │   ├── images
+
 │   │   │   └── UniversityOfDenver-Signature.png
+
 │   │   └── subject_linker
+
 │   │       ├── subject_linker.css
+
 │   │       └── subject_linker.js
+
 │   ├── locales
+
 │   │   ├── en.yml
+
 │   │   └── enums
+
 │   │       └── en.yml
+
 │   └── views
+
 │       ├── archival_objects
+
 │       │   └── _toolbar.html.erb
+
 │       ├── assessments
+
 │       │   └── index.html.erb
+
 │       ├── collection_management
+
 │       │   ├── _show.html.erb
+
 │       │   └── _template.html.erb
+
 │       ├── layout_head.html.erb
+
 │       ├── shared
+
 │       │   └── _component_toolbar.html.erb
+
 │       ├── site
+
 │       │   └── _branding.html.erb
+
 │       └── subjects
+
 │           └── index.html.erb
+
 ├── indexer
+
 │   └── README.md
+
 ├── public
+
 │   ├── README.md
+
 │   ├── locales
+
 │   │   └── README.md
+
 │   └── views
+
 │       └── README.md
+
 └── schemas
+
     ├── README.md
+    
     ├── archival_object_ext.rb
+    
     ├── digital_object_component_ext.rb
+    
     └── resource_ext.rb
+    
 
 
 ## Related work
