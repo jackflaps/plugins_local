@@ -1,0 +1,24 @@
+body {
+  background:  repeat top left;
+  background-size: auto;
+}
+
+header img {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+header + .content-pane { margin-top: ; }
+
+header { background-color: #0A0F15 }
+
+/* remove staff ui inset appearance of header */
+body > div.container-fluid:first-child {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+/* hide the oai_record_prefix setting */
+#oai_config > h3 + div {
+  display: none;
+}
