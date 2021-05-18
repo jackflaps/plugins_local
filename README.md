@@ -9,6 +9,7 @@ Add to /plugins, change to local instead of plugins_local
 
 ## Changelog
 
+* 2021-05-17 - remove subject_linker code, since ArchivesSpace core code now contains icons indicating first term type of subject headings
 * 2020-12-06 - remove subjects and assessments view, no longer working or needed for 2.8.1 with repository customizations, cleanup directories
 * 2020-09-01 - add level 1.5 customization for enums 1 locale
 
@@ -74,12 +75,6 @@ To do customizations in 2.7.0 and beyond, a local plugins directory looks like t
 
 │   │   │   └── UniversityOfDenver-Signature.png
 
-│   │   └── subject_linker
-
-│   │       ├── subject_linker.css
-
-│   │       └── subject_linker.js
-
 │   ├── locales
 
 │   │   ├── en.yml
@@ -103,8 +98,6 @@ To do customizations in 2.7.0 and beyond, a local plugins directory looks like t
 │       │   ├── _show.html.erb
 
 │       │   └── _template.html.erb
-
-│       ├── layout_head.html.erb
 
 │       ├── shared
 
@@ -136,14 +129,14 @@ To do customizations in 2.7.0 and beyond, a local plugins directory looks like t
 
 └── schemas
 
-    ├── README.md
-    
-    ├── archival_object_ext.rb
-    
-    ├── digital_object_component_ext.rb
-    
-    └── resource_ext.rb
-    
+│   ├── README.md
+
+│   ├── archival_object_ext.rb
+
+│   ├── digital_object_component_ext.rb
+
+│   └── resource_ext.rb
+
 
 
 ## Related work
