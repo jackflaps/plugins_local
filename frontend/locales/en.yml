@@ -1,8 +1,4 @@
 en:
-  digital_object_component:
-    component_id: Kaltura ID
-  search_sorting:
-    term_type: Term Type
-  welcome:
-    heading: Welcome to the Archives @ DU Catalog
-    message_logged_in: "<p>Quick links:</p><ul><li><a href=\"plugins/next_accession\">Create new accession</a></li><li><a href=\"plugins/next_resource\">Create new collection</a></li><li><a href=\"https://wiki.du.edu/display/penroselibrary/Technical+Services+Manual+for+Special+Collections+and+Archives\">Technical Services Manual</a> (login required)</li></ul>"
+  resource:
+    user_defined:
+      string_1: Catalog ID
